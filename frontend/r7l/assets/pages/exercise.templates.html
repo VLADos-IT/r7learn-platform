@@ -1,0 +1,33 @@
+<template id="exercise-not-available">
+	<p>Задание доступно только для зарегистрированных пользователей.</p>
+</template>
+
+<template id="exercise-loading">
+	<div class="loading-skeleton"></div>
+</template>
+
+<template id="exercise-not-found">
+	<p>Задание не найдено</p>
+</template>
+
+<template id="exercise-load-error">
+	<p>Ошибка загрузки задания: {{error}}</p>
+</template>
+
+<template id="exercise-desc">
+	<h2>{{name}}</h2>
+	<p>{{description}}</p>
+</template>
+
+<template id="exercise-success">
+	<span style="color:green;">Задание выполнено верно!</span>
+</template>
+
+<template id="exercise-fail">
+	<div>
+		<span style="color:red;">Есть ошибки:</span>
+		<ul>
+			{{errors}}
+		</ul>
+	</div>
+</template>

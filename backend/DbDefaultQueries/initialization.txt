@@ -1,0 +1,89 @@
+CREATE TABLE user_position (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(16) NOT NULL UNIQUE
+);
+
+CREATE TABLE "user" (
+	id SERIAL PRIMARY KEY,
+	login VARCHAR(25) NOT NULL UNIQUE,
+	password VARCHAR(44) NOT NUll,
+	position_id INT NOT NULL
+	REFERENCES user_position(id),
+	email VARCHAR(120) NOT NUll UNIQUE,
+	first_name VARCHAR(20) NOT NULL,
+	last_name VARCHAR(20) NOT NULL,
+	registration_date DATE NOT NULL
+);
+
+CREATE TABLE course (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(30) NOT NULL,
+	system_name VARCHAR(30) NOT NULL,
+	description VARCHAR(200)
+);
+
+CREATE TABLE course_unit_type (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE course_unit (
+	id SERIAL PRIMARY KEY,
+	course_id INT NOT NULL
+	REFERENCES course(id),
+	is_deleted BIT NOT NULL
+	DEFAULT '0'::BIT,
+	order_in_course INT NOT NULL,
+	course_unit_type_id INT NOT NULL
+	REFERENCES course_unit_type(id),
+	name VARCHAR(180) NOT NULL,
+	max_degree INT NOT NULL
+);
+
+CREATE TABLE user_course_unit (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL
+	REFERENCES "user"(id),
+	course_unit_id INT NOT NULL
+	REFERENCES course_unit(id),
+	degree INT NOT NULL
+);
+
+CREATE TABLE test (
+	id SERIAL PRIMARY KEY,
+	course_unit_id INT NOT NULL
+	REFERENCES course_unit(id),
+	description VARCHAR(200)
+);
+
+CREATE TABLE test_question_type (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE test_question (
+	id SERIAL PRIMARY KEY,
+	test_id INT NOT NULL
+	REFERENCES test(id),
+	type_id INT NOT NULL
+	REFERENCES test_question_type(id),
+	question VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE test_question_option (
+	id SERIAL PRIMARY KEY,
+	question_id INT NOT NULL
+	REFERENCES test_question(id),
+	content VARCHAR(255) NOT NULL,
+	is_correct BIT NOT NULL
+);
+
+CREATE TABLE test_question_user_answer (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL
+	REFERENCES "user"(id),
+	test_question_id INT NOT NULL
+	REFERENCES test_question(id),
+	answer_id INT NOT NULL
+	REFERENCES test_question_option(id)
+);

@@ -1,0 +1,21 @@
+INSERT INTO user_position (
+	name
+) VALUES
+('admin'),
+('student'),
+('guest');
+
+
+INSERT INTO course_unit_type (
+	name
+) VALUES
+('lesson'),
+('test'),
+('exercise');
+
+
+INSERT INTO test_question_type (
+	name
+) VALUES
+('single'),
+('multi');

@@ -1,0 +1,35 @@
+For create a test you need to use HTTP POST method
+named 'CreateNewTest' with json body, that contains fields:
+	"courseId" as int,
+	"orderInCourse" as int,
+	"testInfoPath" as str (path to txt info file)
+
+
+
+TEST INFO FILE CONTAINS:
+'!' - "single" question
+'?' - "multi" question
+'~' - Description
+'@' - Name
+'+' - Correct question option
+'-' - Wrong question option
+
+
+
+=== SAMPLE ===
+
+@Just a test
+~This is test description
+
+!First question:
+-Not correct option
+-Also not correct option
++Correct option
+
+?Second question:
+-1
++2
+-3
++4
+
+==============

@@ -1,0 +1,77 @@
+.exercise-section {
+	max-width: 700px;
+	margin: 2rem auto;
+	background: var(--white);
+	border-radius: 0.5rem;
+	padding: 2rem;
+	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+.exercise-section h2 {
+	text-align: center;
+	font-size: 1.5rem;
+	margin-bottom: 2rem;
+	color: var(--primary-color);
+}
+
+#exercise-description p {
+	margin-bottom: 1.5rem;
+	font-size: 1.1rem;
+	color: #444;
+}
+
+#exercise-upload-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	align-items: center;
+}
+
+#exercise-upload-form label {
+	font-size: 1rem;
+	color: #333;
+}
+
+#user-docx-file {
+	margin-top: 0.5rem;
+}
+
+#exercise-upload-form button {
+	background-color: var(--primary-color);
+	color: var(--white);
+	border: none;
+	padding: 0.75rem 2.5rem;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	font-size: 1.1rem;
+	transition: background-color 0.2s;
+}
+
+#exercise-upload-form button:hover {
+	background-color: var(--secondary-color);
+}
+
+#exercise-result {
+	margin-top: 1.5rem;
+	font-weight: bold;
+	text-align: center;
+}
+
+#exercise-result ul {
+	margin: 1rem 0 0 0;
+	padding: 0;
+	list-style: disc inside;
+	text-align: left;
+}
+
+#exercise-result li {
+	color: #c0392b;
+	margin-bottom: 0.5rem;
+	font-size: 1rem;
+}
+
+@media (max-width: 700px) {
+	.exercise-section {
+		padding: 1rem;
+	}
+}

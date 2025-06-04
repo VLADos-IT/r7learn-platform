@@ -1,0 +1,46 @@
+:root {
+	--primary-color: #2f3e46;
+	--secondary-color: #3e5053;
+	--accent-color: #84dcc6;
+	--background-color: #f0f2f5;
+	--text-color: #333;
+	--white: #fff;
+	--header-height: 4rem;
+	--footer-height: 2.5rem;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	font-family: "Segoe UI", sans-serif;
+	line-height: 1.6;
+	font-size: 16px;
+}
+
+ul {
+	list-style: disc inside;
+	margin-bottom: 1rem;
+	padding-left: 1.2em;
+}
+
+li {
+	margin-bottom: 0.7rem;
+	line-height: 1.5;
+}
+
+.hidden {
+	display: none;
+}
+
+input,
+textarea {
+	cursor: text;
+}

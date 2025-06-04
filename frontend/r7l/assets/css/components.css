@@ -1,0 +1,136 @@
+.course-selection {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 2rem;
+	text-align: center;
+}
+
+.course-card {
+	background-color: var(--white);
+	padding: 2rem;
+	border-radius: 0.5rem;
+	text-align: center;
+	text-decoration: none;
+	color: var(--text-color);
+	width: 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+.course-card-img {
+	width: 100%;
+	max-width: 180px;
+	height: 150px;
+	object-fit: contain;
+	margin-bottom: 1rem;
+	display: block;
+}
+
+.course-card h2 {
+	font-size: 1.5rem;
+	margin: 0;
+}
+
+.course-card p {
+	font-size: 1rem;
+	color: #666;
+}
+
+button {
+	padding: 0.625rem 1.25rem;
+	font-size: 1rem;
+	background-color: var(--primary-color);
+	border: none;
+	color: var(--white);
+	border-radius: 0.3125rem;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+button:hover {
+	background-color: var(--secondary-color);
+}
+
+.nav-buttons button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.loading-skeleton {
+	width: 100%;
+	border-radius: 0.5rem;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200px 0;
+	}
+
+	100% {
+		background-position: 200px 0;
+	}
+}
+
+.fade-in {
+	opacity: 0;
+	transition: opacity 0.4s;
+}
+
+.fade-in.visible {
+	opacity: 1;
+}
+
+.course-card--tables {
+	box-shadow: 0 0 0 4px #b6f5e2 inset;
+	background: linear-gradient(135deg, #e8fff6 60%, #b6f5e2 100%);
+	transition: background 0.4s, box-shadow 0.4s;
+}
+
+.course-card--tables:hover {
+	background: linear-gradient(135deg, #b6f5e2 80%, #e8fff6 100%);
+	box-shadow: 0 0 0 6px #7be9c7 inset;
+}
+
+.course-card--presentations {
+	box-shadow: 0 0 0 4px #ffd6d6 inset;
+	background: linear-gradient(135deg, #fff0f0 60%, #ffd6d6 100%);
+	transition: background 0.4s, box-shadow 0.4s;
+}
+
+.course-card--presentations:hover {
+	background: linear-gradient(135deg, #ffd6d6 80%, #fff0f0 100%);
+	box-shadow: 0 0 0 6px #ffb3b3 inset;
+}
+
+.course-card--word {
+	box-shadow: 0 0 0 4px #d6eaff inset;
+	background: linear-gradient(135deg, #f0f7ff 60%, #d6eaff 100%);
+	transition: background 0.4s, box-shadow 0.4s;
+}
+
+.course-card--word:hover {
+	background: linear-gradient(135deg, #d6eaff 80%, #f0f7ff 100%);
+	box-shadow: 0 0 0 6px #a3d4ff inset;
+}
+
+.splash-screen {
+	position: fixed;
+	z-index: 9999;
+	inset: 0;
+	background: rgba(47, 62, 70, 0.95);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: opacity 0.4s;
+}
+
+.splash-screen.hide {
+	opacity: 0;
+	pointer-events: none;
+}

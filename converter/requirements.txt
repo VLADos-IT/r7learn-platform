@@ -1,0 +1,7 @@
+fastapi
+pydantic
+requests
+python-docx
+unidecode
+uvicorn
+python-multipart

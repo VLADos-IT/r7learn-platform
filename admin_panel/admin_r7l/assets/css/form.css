@@ -1,0 +1,66 @@
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+form input,
+form select,
+form button {
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+}
+
+form input:focus,
+form select:focus {
+	border-color: var(--accent-color);
+	outline: none;
+}
+
+form button {
+	background-color: var(--primary-color);
+	color: var(--white);
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+form button:hover {
+	background-color: var(--secondary-color);
+}
+
+button,
+form button,
+.login-button,
+.profile-button {
+	background-color: var(--primary-color) !important;
+	color: var(--white) !important;
+	border: none;
+	border-radius: 0.3125rem;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+button:hover,
+form button:hover,
+.login-button:hover,
+.profile-button:hover {
+	background-color: var(--secondary-color) !important;
+}
+
+button {
+	padding: 0.625rem 1.25rem;
+	font-size: 1rem;
+	background-color: var(--primary-color);
+	border: none;
+	color: var(--white);
+	border-radius: 0.3125rem;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+button:hover {
+	background-color: var(--secondary-color);
+}

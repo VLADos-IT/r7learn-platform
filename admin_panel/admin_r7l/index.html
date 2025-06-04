@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/form.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+
+<body>
+    <div id="splash-screen" class="splash-screen">
+        <span class="btn-spinner" style="display:inline-block;">
+            <svg width="48" height="48" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"
+                    stroke-dasharray="31.415, 31.415">
+                    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s"
+                        repeatCount="indefinite" />
+                </circle>
+            </svg>
+        </span>
+    </div>
+    <div id="header-placeholder"></div>
+    <main class="main-content admin-flex">
+        <section class="admin-block">
+            <h2>Курсы</h2>
+            <ul id="courses-list"></ul>
+            <form id="add-course-form" class="form-row">
+                <div><input type="text" name="name" placeholder="Название курса" required></div>
+                <div><input type="text" name="description" placeholder="Описание" required></div>
+                <div><button type="submit">Добавить курс</button></div>
+            </form>
+        </section>
+        <section class="admin-block">
+            <h2>Загрузка темы</h2>
+            <ul id="units-list"></ul>
+            <form id="add-unit-form" enctype="multipart/form-data" class="form-row">
+                <div>
+                    <select name="courseId" id="course-select" required></select>
+                </div>
+                <div>
+                    <input type="number" name="orderInCourse" placeholder="Порядок" min="1" required>
+                </div>
+                <div class="file-input-wrapper">
+                    <label class="file-custom-btn" for="docx-file">Выбрать файл</label>
+                    <input type="file" name="docx" id="docx-file" accept=".docx" required>
+                    <span class="file-name-label" id="file-name-label">Файл не выбран</span>
+                </div>
+                <div>
+                    <button type="submit">Добавить тему</button>
+                </div>
+            </form>
+            <div id="systemName-hint" style="font-size:0.9em;color:#888;margin-top:0.5em;"></div>
+        </section>
+        <section class="admin-block">
+            <h2>Загрузка теста</h2>
+            <form id="upload-test-form" enctype="multipart/form-data" class="form-row">
+                <div>
+                    <label>Курс:
+                        <select name="courseId" id="test-course-select" required></select>
+                    </label>
+                </div>
+                <div>
+                    <label>Порядок в курсе:
+                        <input type="number" name="orderInCourse" min="1" required>
+                    </label>
+                </div>
+                <div class="file-input-wrapper">
+                    <label class="file-custom-btn" for="test-txt-file">Загрузить .txt</label>
+                    <input type="file" name="testTxt" id="test-txt-file" accept=".txt" required>
+                    <span class="file-name-label" id="test-file-name-label">Файл не выбран</span>
+                </div>
+                <div>
+                    <button type="submit">Создать тест</button>
+                </div>
+            </form>
+            <div id="upload-test-status"></div>
+        </section>
+        <section class="admin-block">
+            <h2>Загрузка задания</h2>
+            <form id="upload-exercise-form" enctype="multipart/form-data" class="form-row">
+                <div>
+                    <label>Курс:
+                        <select name="courseId" id="exercise-course-select" required></select>
+                    </label>
+                </div>
+                <div>
+                    <label>Порядок в курсе:
+                        <input type="number" name="orderInCourse" min="1" required>
+                    </label>
+                </div>
+                <div>
+                    <input type="text" name="name" placeholder="Название задания" required>
+                </div>
+                <div class="file-input-wrapper">
+                    <label class="file-custom-btn" for="exercise-docx-file">Загрузить эталон .docx</label>
+                    <input type="file" name="exerciseDocx" id="exercise-docx-file" accept=".docx" required>
+                    <span class="file-name-label" id="exercise-file-name-label">Файл не выбран</span>
+                </div>
+                <div>
+                    <button type="submit">Создать задание</button>
+                </div>
+            </form>
+            <div id="upload-exercise-status"></div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script type="module" src="assets/scripts/layout.js"></script>
+    <script type="module" src="./assets/scripts/admin.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const imgs = document.querySelectorAll('img');
+            let loaded = 0;
+            if (imgs.length === 0) {
+                document.getElementById('splash-screen')?.classList.add('hide');
+                return;
+            }
+            imgs.forEach(img => {
+                if (img.complete) loaded++;
+                else img.addEventListener('load', () => {
+                    loaded++;
+                    if (loaded === imgs.length) {
+                        setTimeout(() => {
+                            document.getElementById('splash-screen')?.classList.add('hide');
+                        }, 200);
+                    }
+                });
+            });
+            if (loaded === imgs.length) {
+                setTimeout(() => {
+                    document.getElementById('splash-screen')?.classList.add('hide');
+                }, 200);
+            }
+        });
+    </script>
+</body>
+
+</html>

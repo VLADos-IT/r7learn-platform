@@ -1,0 +1,36 @@
+.auth-container {
+	background-color: var(--white);
+	padding: 2rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 400px;
+	text-align: center;
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.auth-form label {
+	text-align: left;
+	font-weight: bold;
+}
+
+.auth-form input {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+}
+
+.hidden {
+	display: none;
+}
+
+input,
+textarea {
+	cursor: text;
+}

@@ -1,0 +1,103 @@
+# .gitignore
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pyd
+*.pyo
+*.pdb
+*.egg-info/
+.eggs/
+*.egg
+*.env/
+.envrc
+.venv/
+venv/
+ENV/
+env.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# VSCode
+.vscode/
+.history/
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Docker
+**/tmp/
+**/temp/
+**/logs/
+**/log/
+*.pid
+*.seed
+*.pid.lock
+
+# Build output
+/dist/
+/build/
+/out/
+/bin/
+/obj/
+/publish/
+/coverage/
+/test-results/
+/*.user
+*.suo
+
+# Nginx
+nginx/logs/
+nginx/*.pid
+
+# Postgres data
+r7l_postgres_data/
+
+# Misc
+*.swp
+*.bak
+*.tmp
+*.orig
+
+# Ignore resource cache
+resources/cache/
+resources/tmp/
+resources/temp_exercise/
+resources/temp_test/
+resources/.DS_Store
+
+# Ignore generated files
+*.log
+*.lock
+*.sqlite
+*.sqlite3
+
+# Ignore docker-compose override
+docker-compose.override.yml
+
+.env.*
+!.env
+
+.Trashes

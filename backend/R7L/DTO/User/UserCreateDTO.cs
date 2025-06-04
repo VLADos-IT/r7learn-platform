@@ -1,0 +1,28 @@
+﻿using System.ComponentModel.DataAnnotations;
+using R7L.Models;
+
+namespace R7L.DTO.User;
+
+public class UserCreateDTO
+{
+    [Required]
+    [MaxLength(25)]
+    public string Login { get; set; }
+
+    [Required]
+    [MaxLength(25)]
+    public string Password { get; set; }
+
+    [Required]
+    [MaxLength(120)]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string FirstName { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string LastName { get; set; }
+}

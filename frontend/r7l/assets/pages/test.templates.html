@@ -1,0 +1,48 @@
+<template id="test-not-available">
+	<p>Тест доступен только для зарегистрированных пользователей.</p>
+</template>
+
+<template id="test-loading">
+	<div class="loading-skeleton"></div>
+</template>
+
+<template id="test-not-found">
+	<p>Тест не найден</p>
+</template>
+
+<template id="test-load-error">
+	<p>Ошибка загрузки теста: {{error}}</p>
+</template>
+
+<template id="test-result">
+	<span>Ваш результат: <b>{{score}}</b></span>
+</template>
+
+<template id="test-submit-btn">
+	<button type="submit" class="test-submit-btn">
+		<span class="btn-text">Отправить</span>
+		<span class="btn-spinner" style="display:none;">
+			<svg width="18" height="18" viewBox="0 0 50 50">
+				<circle cx="25" cy="25" r="20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"
+					stroke-dasharray="31.415, 31.415" transform="rotate(72.0001 25 25)">
+					<animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s"
+						repeatCount="indefinite" />
+				</circle>
+			</svg>
+		</span>
+	</button>
+</template>
+
+<template id="test-question">
+	<div class="test-question">
+		<p class="test-question-title"><b>{{number}}. {{question}}</b></p>
+		{{options}}
+	</div>
+</template>
+
+<template id="test-option">
+	<label class="test-option">
+		<input type="{{type}}" name="{{name}}" value="{{value}}">
+		<span>{{content}}</span>
+	</label><br>
+</template>
