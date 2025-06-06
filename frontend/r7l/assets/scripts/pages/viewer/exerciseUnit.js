@@ -1,11 +1,11 @@
 import {
 	injectExerciseTemplates,
-	renderExerciseDesc,
 	renderExerciseSuccess,
 	renderExerciseFail,
 	renderExerciseLoading,
 	renderExerciseError
 } from '../exercise.js';
+import { renderMarkdown } from '../../components/markdown.js';
 
 export async function renderExerciseUnit(unit, container) {
 	await injectExerciseTemplates();
@@ -17,7 +17,23 @@ export async function renderExerciseUnit(unit, container) {
 	}
 
 	container.innerHTML = '';
-	container.appendChild(renderExerciseDesc(unit));
+
+	const descMdPath = `/resources/exercise_desc/${encodeURIComponent(unit.name)}/mds/0-start.md`;
+	const descMdBasePath = `/resources/exercise_desc/${encodeURIComponent(unit.name)}/mds`;
+	const descContainer = document.createElement('div');
+	descContainer.className = 'exercise-desc-markdown';
+	try {
+		const resp = await fetch(descMdPath);
+		if (resp.ok) {
+			const md = await resp.text();
+			renderMarkdown(md, descContainer, descMdBasePath, '0-start.md');
+		} else {
+			descContainer.innerHTML = '<p>Описание задания не найдено</p>';
+		}
+	} catch (e) {
+		descContainer.innerHTML = '<p>Ошибка загрузки описания задания</p>';
+	}
+	container.appendChild(descContainer);
 
 	const form = document.createElement('form');
 	form.id = 'exercise-upload-form';

@@ -55,7 +55,7 @@ function renderTest(test, container) {
 						type,
 						name: `q${q.id}${type === 'checkbox' ? '[]' : ''}`,
 						value: opt.id,
-						content: escapeHtml(opt.content)
+						text: escapeHtml(opt.content)
 					}).outerHTML;
 				});
 				form.appendChild(renderTemplate('test-question', {

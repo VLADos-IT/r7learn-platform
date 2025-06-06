@@ -10,7 +10,7 @@ async function loadComponent(url, placeholderId, skeletonHeight = '3.5rem') {
 		const now = Date.now();
 		const el = document.getElementById(placeholderId);
 		if (!el) return;
-		if (cached && cacheTime && now - cacheTime < 60 * 60 * 1000) { // 1 час
+		if (cached && cacheTime && now - cacheTime < 60 * 60 * 1000) {
 			el.innerHTML = cached;
 		} else {
 			const response = await fetch(url + '?v=' + version);
@@ -34,13 +34,36 @@ function showSkeleton(placeholderId, height = '3.5rem') {
 	}
 }
 
-function toggleMenu() {
+function toggleMenu(forceClose = false) {
 	const sidebar = document.querySelector('.sidebar');
+	const backdrop = document.querySelector('.sidebar-backdrop');
 	if (sidebar) {
-		sidebar.classList.toggle('visible');
-		sidebar.classList.toggle('hidden');
+		const isVisible = sidebar.classList.contains('visible');
+		if (forceClose || isVisible) {
+			sidebar.classList.remove('visible');
+			if (backdrop) backdrop.style.display = 'none';
+		} else {
+			sidebar.classList.add('visible');
+			if (backdrop) backdrop.style.display = 'block';
+		}
 	}
 }
+window.toggleMenu = toggleMenu;
+
+document.addEventListener('DOMContentLoaded', () => {
+	const sidebar = document.querySelector('.sidebar');
+	const backdrop = document.querySelector('.sidebar-backdrop');
+	if (backdrop) {
+		backdrop.addEventListener('click', () => toggleMenu(true));
+	}
+	if (sidebar) {
+		sidebar.addEventListener('click', (e) => {
+			if (e.target.classList.contains('menu-section')) {
+				toggleMenu(true);
+			}
+		});
+	}
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 	loadComponent('/header.html', 'header-placeholder', '4rem').then(() => {

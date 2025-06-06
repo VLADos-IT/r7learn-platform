@@ -1,7 +1,6 @@
 import { buildMenu } from '../../components/menu.js';
 import { setupNavigation } from '../../components/navigation.js';
 import * as core from './core.js';
-import * as nav from './nav.js';
 import './prevNext.js';
 
 let currentIndex = 0;
@@ -12,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const courseId = core.getCourseIdFromURL();
 	const userId = core.getUserId();
 	const container = document.getElementById("markdown-content");
+	if (!container) return;
 	if (!courseId || !userId) {
 		container.innerHTML = `<h1>Ошибка</h1><p>Курс или пользователь не определён.</p>`;
 		return;
@@ -27,9 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 		if (core.courseUnits && core.courseUnits.length > 0) {
 			buildMenu(core.courseUnits, savedIndex, core.progressList, (idx) => {
-				nav.loadPage(idx);
+				core.loadPage(idx);
 			});
-			nav.loadPage(savedIndex);
+			core.loadPage(savedIndex);
 			setupNavigation(
 				() => { window.prevPage(); },
 				() => { window.nextPage(); }
@@ -50,11 +50,15 @@ window.refreshProgressAndMenu = async function () {
 	if (!courseId || !userId) return;
 	await core.loadProgress(courseId, userId);
 	buildMenu(core.courseUnits, core.currentIndex, core.progressList, (idx) => {
-		nav.loadPage(idx);
+		core.loadPage(idx);
 	});
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+	const container = document.getElementById('viewer-container');
+	if (!container) {
+		return;
+	}
 	const markdown = document.querySelector('.markdown');
 	const navButtons = document.querySelector('.nav-buttons');
 	if (!markdown || !navButtons) return;

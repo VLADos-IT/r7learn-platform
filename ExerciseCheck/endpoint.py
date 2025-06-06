@@ -6,9 +6,7 @@ import os
 import docx_comparer
 
 
-
 app = FastAPI()
-
 
 
 # correct type_name from db
@@ -16,7 +14,6 @@ exercise_course_unit_type_name = "exercise"
 
 # backend API url base; ends with '/'
 url_base = "http://r7l-backend:5000/api/"
-
 
 
 # current endpoint host
@@ -34,7 +31,6 @@ exercises_dir_path = "/resources/exercises"
 exercise_expected_solution_name = "expected"
 
 
-
 class ExerciseCreateDTO(BaseModel):
     courseId: int
     orderInCourse: int
@@ -46,7 +42,6 @@ class ExerciseCheckDTO(BaseModel):
     courseUnitId: int
     userId: int
     userSolutionPath: str
-
 
 
 def post_exercise_course_unit(course_id: int, order_in_course: int, name: str, max_degree: int):
@@ -68,12 +63,14 @@ def post_exercise_course_unit(course_id: int, order_in_course: int, name: str, m
 def create_exercise(expected_solution_path: str, course_id: int, order_in_course: int, name: str):
     max_degree = 1
 
-    course_unit_id = post_exercise_course_unit(course_id, order_in_course, name, max_degree)
+    course_unit_id = post_exercise_course_unit(
+        course_id, order_in_course, name, max_degree)
 
     exercise_dir = exercises_dir_path + path_separator + str(course_unit_id)
     os.makedirs(exercise_dir, exist_ok=False)
 
-    new_expected_solution_path = exercise_dir + path_separator + exercise_expected_solution_name
+    new_expected_solution_path = exercise_dir + \
+        path_separator + exercise_expected_solution_name
 
     expected_solution_file_extension = expected_solution_path.split('.')[-1]
     new_expected_solution_path += '.' + expected_solution_file_extension
@@ -101,12 +98,12 @@ def check_exercise(course_unit_id: int, user_id: int, user_solution_path: str):
         + exercise_expected_solution_name + '.' + solution_file_extension
     )
 
-    user_solution_differrences = docx_comparer.compare_docx(expected_solution_path, user_solution_path)
+    user_solution_differrences = docx_comparer.compare_docx(
+        expected_solution_path, user_solution_path)
     degree = int(len(user_solution_differrences) == 0)
 
     update_course_progress(user_id, course_unit_id, degree)
     return user_solution_differrences, degree == 1
-
 
 
 @app.put("/CheckExercise")
@@ -130,7 +127,6 @@ async def create_new_exercise(exercise_create_dto: ExerciseCreateDTO):
         order_in_course=exercise_create_dto.orderInCourse,
         name=exercise_create_dto.name
     )
-
 
 
 if __name__ == "__main__":

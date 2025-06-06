@@ -23,6 +23,11 @@
 </head>
 
 <body>
+    <script>
+        if (!localStorage.getItem('userId')) {
+            window.location.href = 'auth.html';
+        }
+    </script>
     <div id="splash-screen" class="splash-screen">
         <span class="btn-spinner" style="display:inline-block;">
             <svg width="48" height="48" viewBox="0 0 50 50">
@@ -40,7 +45,10 @@
             <h2>Меню курса</h2>
             <ul id="menu"></ul>
         </aside>
+        <div class="sidebar-backdrop"></div>
+
         <main class="content">
+            <div id="viewer-container"></div>
             <div id="markdown-content" class="markdown"></div>
             <div class="nav-buttons">
                 <button data-nav="prev" class="hidden"><span class="nav-arrow">&#8592;</span> Назад</button>

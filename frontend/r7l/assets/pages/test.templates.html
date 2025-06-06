@@ -41,8 +41,8 @@
 </template>
 
 <template id="test-option">
-	<label class="test-option">
-		<input type="{{type}}" name="{{name}}" value="{{value}}">
-		<span>{{content}}</span>
-	</label><br>
+	<div class="test-option">
+		<input type="{{type}}" name="{{name}}" value="{{value}}" id="opt-{{value}}">
+		<label for="opt-{{value}}">{{text}}</label>
+	</div>
 </template>

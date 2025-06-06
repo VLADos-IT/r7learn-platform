@@ -1,5 +1,10 @@
 import { getCourseUnits } from '../../api/course.js';
 import { getCourseProgress, updateCourseProgress } from '../../api/progress.js';
+import { getTest } from '../../api/test.js';
+import { renderTest } from '../test.js';
+import { renderExerciseUnit } from './exerciseUnit.js';
+import { loadMdFile } from './md.js';
+import { updateNavButtons } from './nav.js';
 
 export let progressList = [];
 export let currentIndex = 0;
@@ -16,6 +21,8 @@ export let mdBasePath = '';
 export function setMdBasePath(val) { mdBasePath = val; }
 
 export let mdFiles = [];
+export function setMdFiles(val) { mdFiles = val; }
+
 export let courseUnits = [];
 
 export function loadPage(index) {
@@ -48,7 +55,11 @@ export function loadPage(index) {
 		});
 		updateNavButtons();
 	} else if (unit.courseUnitTypeName === "exercise") {
+		setCurrentMdIndex(0);
+		mdFiles.length = 0;
+		container.innerHTML = '';
 		renderExerciseUnit(unit, container);
+		updateNavButtons();
 	} else if (unit.courseUnitTypeName === "lesson") {
 		setCurrentMdIndex(0);
 		const mdPath = parseMdPathFromName(unit.name);
@@ -114,5 +125,3 @@ export function getCourseIdFromURL() {
 	const params = new URLSearchParams(window.location.search);
 	return params.get('course');
 }
-
-export function setMdFiles(val) { mdFiles = val; }

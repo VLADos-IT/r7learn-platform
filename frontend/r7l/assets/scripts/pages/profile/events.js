@@ -16,14 +16,14 @@ export function setupProfileForm(userData) {
 		if (needCheck) {
 			try {
 				const unique = await userCheckUnique({ login: form.login.value, email: form.email.value });
-				if (!unique.LoginIsUnique && form.login.value !== userData.login) {
+				if (!unique.loginIsUnique && form.login.value !== userData.login) {
 					showAlert('Такой логин уже занят, попробуйте другой.');
 					btn.querySelector('.btn-text').style.display = '';
 					btn.querySelector('.btn-spinner').style.display = 'none';
 					form.login.focus();
 					return;
 				}
-				if (!unique.EmailIsUnique && form.email.value !== userData.email) {
+				if (!unique.emailIsUnique && form.email.value !== userData.email) {
 					showAlert('Этот email уже используется другим пользователем.');
 					btn.querySelector('.btn-text').style.display = '';
 					btn.querySelector('.btn-spinner').style.display = 'none';

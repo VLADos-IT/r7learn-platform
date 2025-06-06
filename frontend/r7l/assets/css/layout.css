@@ -53,9 +53,8 @@ html {
 
 .header-content {
 	display: flex;
-	justify-content: space-between;
-	width: 100%;
 	align-items: center;
+	width: 100%;
 }
 
 .course-title {
@@ -153,6 +152,7 @@ body>main,
 }
 
 .toggle-menu-button {
+	order: 3;
 	display: none;
 	background-color: var(--primary-color);
 	color: var(--white);
@@ -161,12 +161,18 @@ body>main,
 	border-radius: 0.25rem;
 	cursor: pointer;
 	font-size: 1.25rem;
-	position: fixed;
-	top: 1rem;
-	right: 1rem;
+	position: static;
 	z-index: 1001;
+	margin-left: 0.5rem;
 }
 
 .toggle-menu-button:hover {
 	background-color: var(--secondary-color);
+}
+
+#auth-profile-btn {
+	order: 2;
+	margin-left: auto;
+	display: flex;
+	align-items: center;
 }

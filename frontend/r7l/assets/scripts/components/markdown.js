@@ -11,9 +11,17 @@ export function renderMarkdown(md, container, mdBasePath = '', mdFileName = '') 
 		if (typeof href !== 'string') return '';
 
 		let unitName = '';
+		let isExerciseDesc = false;
 		if (mdBasePath) {
-			const match = mdBasePath.match(/\/resources\/([^/]+)\/mds/);
-			if (match) unitName = match[1];
+			let match = mdBasePath.match(/\/resources\/([^/]+)\/mds/);
+			if (match) {
+				unitName = match[1];
+			}
+			if (mdBasePath.startsWith('/resources/exercise_desc/')) {
+				isExerciseDesc = true;
+				match = mdBasePath.match(/\/resources\/exercise_desc\/([^/]+)\/mds/);
+				if (match) unitName = match[1];
+			}
 		}
 		let imgSubfolder = '';
 		if (mdFileName) {
@@ -21,7 +29,11 @@ export function renderMarkdown(md, container, mdBasePath = '', mdFileName = '') 
 		}
 		if (href.startsWith('../imgs/') && unitName && imgSubfolder) {
 			const imageName = href.split('/').pop();
-			href = `/resources/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+			if (isExerciseDesc) {
+				href = `/resources/exercise_desc/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+			} else {
+				href = `/resources/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+			}
 		}
 		let out = `<img src="${href}" alt="${text || ''}"`;
 		if (title) out += ` title="${title}"`;

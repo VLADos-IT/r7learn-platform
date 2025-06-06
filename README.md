@@ -30,20 +30,19 @@ docker compose up -d
 ### 1. Nginx and let's encrypt
 
 ```sh
-mv /opt/R7L-full/EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/r7learn.xorg.su /etc/nginx/sites-enabled/
-mv /opt/R7L-full/EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/r7learn.xorg.su /etc/nginx/sites-enabled/
-mv /opt/R7L-full/nginx/.htpasswd /etc/nginx/
+cp /opt/R7L-full/EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/r7learn.xorg.su.conf /etc/nginx/sites-enabled/
+cp /opt/R7L-full/EXTERNAL_nginx_configurations/admin.r7learn.xorg.su.conf /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/admin.r7learn.xorg.su.conf /etc/nginx/sites-enabled/
+cp /opt/R7L-full/nginx/.htpasswd /etc/nginx/
 systemctl start nginx
-sudo certbot --nginx -d r7learn.xorg.su -d www.r7learn.xorg.su
+certbot --nginx -d r7learn.xorg.su -d admin.r7learn.xorg.su
 systemctl restart nginx
 ```
 
 ## Access fix
 
 ```sh
-chown -R 101:101 ./resources
 chown -R 101:101 ./resources
 ```
 

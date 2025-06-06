@@ -5,7 +5,8 @@ import {
 	courseUnits, progressList, getCurrentIndex, setCurrentMdIndex, getCurrentMdIndex
 } from './core.js';
 import { buildMenu } from '../../components/menu.js';
-import { loadPage, updateNavButtons } from './nav.js';
+import { loadPage } from './core.js';
+import { updateNavButtons } from './nav.js';
 import { updatePageIndicator } from './md.js';
 
 window.prevPage = async function () {

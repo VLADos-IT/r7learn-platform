@@ -84,11 +84,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		e.preventDefault();
 		const form = e.target;
 		const status = document.getElementById('upload-exercise-status');
-		const formData = new FormData(form);
 		const courseId = form.courseId.value;
 		const orderInCourse = form.orderInCourse.value;
 		const name = form.name.value.trim();
 		const fileInput = form.exerciseDocx;
+		const descInput = form['descDocx'];
 		status.textContent = 'Загрузка...';
 
 		if (!fileInput.files.length) {
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			return;
 		}
 
-		// 1. Загружаем файл во временную папку
+		// 1. Загружаем эталон
 		const file = fileInput.files[0];
 		const filename = `exercise_${Date.now()}.docx`;
 		const uploadRes = await fetch('/resources/temp_exercise/' + filename, {
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			return;
 		}
 
-		// 2. Создаём задание через ExerciseCheck API
+		// 2. Создаём задание
 		const body = {
 			courseId: Number(courseId),
 			orderInCourse: Number(orderInCourse),
@@ -124,6 +124,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 			status.textContent = 'Ошибка: ' + await res.text();
 			return;
 		}
+
+		// 3. Загружаем описание (docx) через конвертер
+		if (descInput && descInput.files.length) {
+			const descFile = descInput.files[0];
+			const descFormData = new FormData();
+			descFormData.append('descDocx', descFile);
+			descFormData.append('name', name);
+			const convRes = await fetch('/converter/CreateExerciseInfo', {
+				method: 'POST',
+				body: descFormData
+			});
+			if (!convRes.ok) {
+				status.textContent = 'Ошибка загрузки описания: ' + await convRes.text();
+				return;
+			}
+		}
+
 		status.textContent = 'Задание успешно создано!';
 		form.reset();
 		await renderUnits(courseId);
@@ -133,6 +150,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	document.getElementById('exercise-docx-file').addEventListener('change', function () {
 		const label = document.getElementById('exercise-file-name-label');
+		label.textContent = this.files.length ? this.files[0].name : 'Файл не выбран';
+	});
+
+	document.getElementById('exercise-desc-docx-file').addEventListener('change', function () {
+		const label = document.getElementById('exercise-desc-file-name-label');
 		label.textContent = this.files.length ? this.files[0].name : 'Файл не выбран';
 	});
 
