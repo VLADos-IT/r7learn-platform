@@ -1,14 +1,6 @@
-import {
-	injectExerciseTemplates,
-	renderExerciseDesc,
-	renderExerciseSuccess,
-	renderExerciseFail,
-	renderExerciseLoading,
-	renderExerciseError
-} from '../exercise.js';
-
 export async function renderExerciseUnit(unit, container) {
-	await injectExerciseTemplates();
+	const exercise = await import('../exercise.js');
+	await exercise.injectExerciseTemplates();
 
 	const userId = localStorage.getItem('userId');
 	if (!userId) {
@@ -17,7 +9,7 @@ export async function renderExerciseUnit(unit, container) {
 	}
 
 	container.innerHTML = '';
-	container.appendChild(renderExerciseDesc(unit));
+	container.appendChild(exercise.renderExerciseDesc(unit));
 
 	const form = document.createElement('form');
 	form.id = 'exercise-upload-form';
@@ -37,7 +29,7 @@ export async function renderExerciseUnit(unit, container) {
 	form.addEventListener('submit', async e => {
 		e.preventDefault();
 		resultBlock.innerHTML = '';
-		resultBlock.appendChild(renderExerciseLoading());
+		resultBlock.appendChild(exercise.renderExerciseLoading());
 		const fileInput = form.userDocx;
 		if (!fileInput.files.length) {
 			resultBlock.innerHTML = 'Выберите файл!';
@@ -65,15 +57,15 @@ export async function renderExerciseUnit(unit, container) {
 		});
 		if (!res.ok) {
 			resultBlock.innerHTML = '';
-			resultBlock.appendChild(renderExerciseError(await res.text()));
+			resultBlock.appendChild(exercise.renderExerciseError(await res.text()));
 			return;
 		}
 		const data = await res.json();
 		resultBlock.innerHTML = '';
 		if (data.result) {
-			resultBlock.appendChild(renderExerciseSuccess());
+			resultBlock.appendChild(exercise.renderExerciseSuccess());
 		} else {
-			resultBlock.appendChild(renderExerciseFail(data.differences));
+			resultBlock.appendChild(exercise.renderExerciseFail(data.differences));
 		}
 	});
 }

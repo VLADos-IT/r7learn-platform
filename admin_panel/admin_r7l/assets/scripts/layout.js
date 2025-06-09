@@ -16,7 +16,7 @@ async function loadComponent(url, placeholderId) {
 	}
 }
 
-function toggleMenu() {
+function toggleicons() {
 	const sidebar = document.querySelector('.sidebar');
 	sidebar.classList.toggle('visible');
 	sidebar.classList.toggle('hidden');

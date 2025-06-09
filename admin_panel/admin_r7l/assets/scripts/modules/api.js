@@ -1,6 +1,6 @@
 const API_BASE = 'https://r7learn.xorg.su/api';
 
-export async function sendSwaggerRequest(method, endpoint, body) {
+export async function sendRequest(method, endpoint, body) {
 	const res = await fetch(`${API_BASE}${endpoint}`, {
 		method,
 		headers: { 'Content-Type': 'application/json' },
@@ -11,17 +11,17 @@ export async function sendSwaggerRequest(method, endpoint, body) {
 }
 
 export async function fetchCourses() {
-	return sendSwaggerRequest('GET', '/Course/GetAllCourses');
+	return sendRequest('GET', '/Course/GetAllCourses');
 }
 
 export async function createCourse(data) {
-	return sendSwaggerRequest('POST', '/Course/Create', data);
+	return sendRequest('POST', '/Course/Create', data);
 }
 
 export async function fetchUnits(courseId) {
-	return sendSwaggerRequest('GET', `/Course/${courseId}/Units`);
+	return sendRequest('GET', `/Course/${courseId}/Units`);
 }
 
 export async function createUnit(data) {
-	return sendSwaggerRequest('POST', '/CourseUnit/Create', data);
+	return sendRequest('POST', '/CourseUnit/Create', data);
 }

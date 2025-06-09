@@ -108,3 +108,11 @@ input[type="file"] {
 	opacity: 0;
 	pointer-events: none;
 }
+
+#units-list li {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: block;
+}

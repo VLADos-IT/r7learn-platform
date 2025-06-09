@@ -135,3 +135,17 @@ button:hover {
 	opacity: 0;
 	pointer-events: none;
 }
+
+.btn-icon {
+	width: 1.3em;
+	height: 1.3em;
+	vertical-align: middle;
+	margin-right: 0.5em;
+	filter: grayscale(0.2) brightness(0.95);
+	opacity: 0.85;
+	transition: opacity 0.2s;
+}
+
+button:disabled .btn-icon {
+	opacity: 0.5;
+}

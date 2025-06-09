@@ -1,4 +1,4 @@
-import { buildMenu } from '../../components/menu.js';
+import { buildicons } from '../../components/menu.js';
 import { setupNavigation } from '../../components/navigation.js';
 import * as core from './core.js';
 import './prevNext.js';
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			if (savedIndex < 0 || savedIndex >= core.courseUnits.length) savedIndex = 0;
 		}
 		if (core.courseUnits && core.courseUnits.length > 0) {
-			buildMenu(core.courseUnits, savedIndex, core.progressList, (idx) => {
+			buildicons(core.courseUnits, savedIndex, core.progressList, (idx) => {
 				core.loadPage(idx);
 			});
 			core.loadPage(savedIndex);
@@ -36,20 +36,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 			);
 		} else {
 			container.innerHTML = `<h1>Нет тем в курсе</h1>`;
-			document.getElementById("menu").innerHTML = "";
+			document.getElementById("icons").innerHTML = "";
 		}
 	} catch (e) {
 		container.innerHTML = `<h1>Ошибка</h1><p>${e.message}</p>`;
-		document.getElementById("menu").innerHTML = "";
+		document.getElementById("icons").innerHTML = "";
 	}
 });
 
-window.refreshProgressAndMenu = async function () {
+window.refreshProgressAndicons = async function () {
 	const courseId = core.getCourseIdFromURL();
 	const userId = core.getUserId();
 	if (!courseId || !userId) return;
 	await core.loadProgress(courseId, userId);
-	buildMenu(core.courseUnits, core.currentIndex, core.progressList, (idx) => {
+	buildicons(core.courseUnits, core.currentIndex, core.progressList, (idx) => {
 		core.loadPage(idx);
 	});
 };

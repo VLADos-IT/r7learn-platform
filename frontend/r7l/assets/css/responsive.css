@@ -20,13 +20,13 @@
 }
 
 @media (max-width: 1024px) {
-	.toggle-menu-button {
+	.toggle-icons-button {
 		display: inline-block;
 	}
 }
 
 @media (max-width: 900px) {
-	.toggle-menu-button {
+	.toggle-icons-button {
 		display: inline-block;
 	}
 
@@ -65,7 +65,7 @@
 }
 
 @media (max-width: 700px) {
-	.toggle-menu-button {
+	.toggle-icons-button {
 		display: inline-block;
 		position: static;
 		margin-left: 0.5rem;
@@ -77,7 +77,7 @@
 }
 
 @media (max-width: 768px) {
-	.toggle-menu-button {
+	.toggle-icons-button {
 		display: block;
 	}
 
@@ -188,7 +188,7 @@
 		font-size: 0.9rem;
 	}
 
-	.toggle-menu-button {
+	.toggle-icons-button {
 		display: block;
 	}
 
@@ -245,7 +245,7 @@
 }
 
 @media (max-width: 37.5rem) {
-	.menu-section-title {
+	.icons-section-title {
 		font-size: 0.875rem;
 	}
 

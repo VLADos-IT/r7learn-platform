@@ -34,7 +34,7 @@ function showSkeleton(placeholderId, height = '3.5rem') {
 	}
 }
 
-function toggleMenu(forceClose = false) {
+function toggleicons(forceClose = false) {
 	const sidebar = document.querySelector('.sidebar');
 	const backdrop = document.querySelector('.sidebar-backdrop');
 	if (sidebar) {
@@ -48,18 +48,18 @@ function toggleMenu(forceClose = false) {
 		}
 	}
 }
-window.toggleMenu = toggleMenu;
+window.toggleicons = toggleicons;
 
 document.addEventListener('DOMContentLoaded', () => {
 	const sidebar = document.querySelector('.sidebar');
 	const backdrop = document.querySelector('.sidebar-backdrop');
 	if (backdrop) {
-		backdrop.addEventListener('click', () => toggleMenu(true));
+		backdrop.addEventListener('click', () => toggleicons(true));
 	}
 	if (sidebar) {
 		sidebar.addEventListener('click', (e) => {
-			if (e.target.classList.contains('menu-section')) {
-				toggleMenu(true);
+			if (e.target.classList.contains('icons-section')) {
+				toggleicons(true);
 			}
 		});
 	}
@@ -72,11 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
 			const userId = localStorage.getItem('userId');
 			const login = localStorage.getItem('login');
 			if (userId && login) {
-				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">${escapeHtml(login)}</button>`;
+				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">
+        <img src="assets/icons/person.svg" class="btn-icon" alt="Профиль" />
+        ${escapeHtml(login)}
+    </button>`;
 			} else if (userId) {
-				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">Профиль</button>`;
+				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">
+        <img src="assets/icons/person.svg" class="btn-icon" alt="Профиль" />
+        Профиль
+    </button>`;
 			} else {
-				btnContainer.innerHTML = `<button class="login-button" onclick="location.href='auth.html'">Авторизация</button>`;
+				btnContainer.innerHTML = `<button class="login-button" onclick="location.href='auth.html'">
+        <img src="assets/icons/login.svg" class="btn-icon" alt="Войти" />
+        Авторизация
+    </button>`;
 			}
 		}
 	});

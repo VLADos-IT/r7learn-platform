@@ -1,5 +1,19 @@
-export function renderMarkdown(md, container, mdBasePath = '', mdFileName = '') {
-	const renderer = new window.marked.Renderer();
+export async function renderMarkdown(md, container, mdBasePath = '', mdFileName = '') {
+	let marked;
+	if (window.marked) {
+		marked = window.marked;
+	} else {
+		await new Promise((resolve, reject) => {
+			const script = document.createElement('script');
+			script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+			script.onload = resolve;
+			script.onerror = reject;
+			document.head.appendChild(script);
+		});
+		marked = window.marked;
+	}
+
+	const renderer = new marked.Renderer();
 
 	renderer.image = function (href, title, text) {
 		if (typeof href === 'object' && href !== null) {
@@ -42,5 +56,5 @@ export function renderMarkdown(md, container, mdBasePath = '', mdFileName = '') 
 	};
 
 	container.classList.add('markdown');
-	container.innerHTML = window.marked.parse(md, { renderer });
+	container.innerHTML = marked.parse(md, { renderer });
 }

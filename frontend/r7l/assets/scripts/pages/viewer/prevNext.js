@@ -4,7 +4,6 @@ import {
 	updateProgress, loadProgress, getCourseIdFromURL, getUserId,
 	courseUnits, progressList, getCurrentIndex, setCurrentMdIndex, getCurrentMdIndex
 } from './core.js';
-import { buildMenu } from '../../components/menu.js';
 import { loadPage } from './core.js';
 import { updateNavButtons } from './nav.js';
 import { updatePageIndicator } from './md.js';
@@ -22,7 +21,8 @@ window.prevPage = async function () {
 		if (unit) {
 			await updateProgress(unit.id, getCurrentMdIndex());
 			await loadProgress(getCourseIdFromURL(), getUserId());
-			buildMenu(courseUnits, getCurrentIndex(), progressList, (idx) => {
+			const { buildicons } = await import('../../components/menu.js');
+			buildicons(courseUnits, getCurrentIndex(), progressList, (idx) => {
 				loadPage(idx);
 			});
 		}
@@ -44,7 +44,8 @@ window.nextPage = async function () {
 		if (unit) {
 			await updateProgress(unit.id, getCurrentMdIndex());
 			await loadProgress(getCourseIdFromURL(), getUserId());
-			buildMenu(courseUnits, getCurrentIndex(), progressList, (idx) => {
+			const { buildicons } = await import('../../components/menu.js');
+			buildicons(courseUnits, getCurrentIndex(), progressList, (idx) => {
 				loadPage(idx);
 			});
 		}

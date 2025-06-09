@@ -1,12 +1,11 @@
 import { userGet } from './profile/api.js';
-import { renderTemplate } from './profile/templates.js';
-import { fadeIn } from './profile/ui.js';
-import { setupProfileForm, setupPasswordForm, setupLogout } from './profile/events.js';
 import { escapeHtml } from '../utils/escape.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const userId = localStorage.getItem('userId');
 	const container = document.querySelector('.profile-container');
+
+	const { renderTemplate, fadeIn, setupProfileForm, setupPasswordForm, setupLogout } = await import('./profile/dynamic.js');
 
 	renderTemplate('profile-skeleton', container);
 

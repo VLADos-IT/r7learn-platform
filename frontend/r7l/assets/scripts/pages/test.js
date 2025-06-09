@@ -101,8 +101,8 @@ function renderTest(test, container) {
 					resultBlock.innerHTML = '';
 					resultBlock.appendChild(renderTemplate('test-result', { score: res }));
 
-					if (window.refreshProgressAndMenu) {
-						await window.refreshProgressAndMenu();
+					if (window.refreshProgressAndicons) {
+						await window.refreshProgressAndicons();
 					}
 				} catch (err) {
 					showAlert('Ошибка отправки теста: ' + (err.message || 'Попробуйте позже'));

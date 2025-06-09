@@ -13,8 +13,21 @@ services:
       - ./backend/DbDefaultQueries/default_inserts.txt:/docker-entrypoint-initdb.d/02_default_inserts.sql
     networks:
       - r7l-network
-    ports:
-      - "5432:5432"
+
+  r7l-postgres-replica:
+    image: postgres:15
+    container_name: r7l-postgres-replica
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: >
+      postgres -c wal_level=replica -c hot_standby=on
+    depends_on:
+      - r7l-postgres
+    networks:
+      - r7l-network
 
   r7l-backend:
     build:
@@ -119,6 +132,19 @@ services:
     ports:
       - "8082:80"
       - "8443:443"
+    networks:
+      - r7l-network
+
+  integration-test:
+    image: python:3.11
+    depends_on:
+      - r7l-backend
+      - r7l-frontend
+      - r7l-admin-panel
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: /bin/sh -c "pip install requests && python integration_test.py"
     networks:
       - r7l-network
 volumes:

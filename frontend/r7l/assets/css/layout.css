@@ -151,7 +151,7 @@ body>main,
 	object-fit: contain;
 }
 
-.toggle-menu-button {
+.toggle-icons-button {
 	order: 3;
 	display: none;
 	background-color: var(--primary-color);
@@ -166,7 +166,7 @@ body>main,
 	margin-left: 0.5rem;
 }
 
-.toggle-menu-button:hover {
+.toggle-icons-button:hover {
 	background-color: var(--secondary-color);
 }
 

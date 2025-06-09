@@ -28,7 +28,7 @@
 	color: #ddd;
 }
 
-.menu-section {
+.icons-section {
 	position: relative;
 	background-color: #354951;
 	border-radius: 0.5rem;
@@ -40,17 +40,17 @@
 	border-left: 0.4rem solid transparent;
 }
 
-.menu-section:hover {
+.icons-section:hover {
 	background-color: #3e5560;
 }
 
-.menu-section.active {
+.icons-section.active {
 	background-color: var(--primary-color);
 	color: var(--white);
 	border-left-color: var(--accent-color);
 }
 
-.menu-section-title {
+.icons-section-title {
 	color: var(--white);
 	font-size: 0.9375rem;
 	font-weight: 500;
@@ -77,7 +77,7 @@
 	border-radius: 5px 0 0 5px;
 }
 
-.menu-icon {
+.icons-icon {
 	width: 1.25em;
 	height: 1.25em;
 	vertical-align: middle;

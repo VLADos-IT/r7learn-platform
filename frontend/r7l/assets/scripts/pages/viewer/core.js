@@ -1,8 +1,6 @@
 import { getCourseUnits } from '../../api/course.js';
 import { getCourseProgress, updateCourseProgress } from '../../api/progress.js';
 import { getTest } from '../../api/test.js';
-import { renderTest } from '../test.js';
-import { renderExerciseUnit } from './exerciseUnit.js';
 import { loadMdFile } from './md.js';
 import { updateNavButtons } from './nav.js';
 
@@ -34,7 +32,7 @@ export function loadPage(index) {
 	}
 	const unit = courseUnits[index];
 
-	document.querySelectorAll('.menu-section').forEach((el, idx) => {
+	document.querySelectorAll('.icons-section').forEach((el, idx) => {
 		el.classList.toggle('active', idx === index);
 	});
 
@@ -44,22 +42,26 @@ export function loadPage(index) {
 		setCurrentMdIndex(0);
 		mdFiles.length = 0;
 		container.innerHTML = '';
-		getTest(unit.id).then(test => {
-			if (test && test.questions && test.questions.length) {
-				renderTest(test, container);
-			} else {
-				container.innerHTML = "<p>Тест не найден</p>";
-			}
-		}).catch(e => {
-			container.innerHTML = `<p>Ошибка загрузки теста: ${e.message}</p>`;
+		import('../test.js').then(({ renderTest }) => {
+			getTest(unit.id).then(test => {
+				if (test && test.questions && test.questions.length) {
+					renderTest(test, container);
+				} else {
+					container.innerHTML = "<p>Тест не найден</p>";
+				}
+			}).catch(e => {
+				container.innerHTML = `<p>Ошибка загрузки теста: ${e.message}</p>`;
+			});
 		});
 		updateNavButtons();
 	} else if (unit.courseUnitTypeName === "exercise") {
 		setCurrentMdIndex(0);
 		mdFiles.length = 0;
 		container.innerHTML = '';
-		renderExerciseUnit(unit, container);
-		updateNavButtons();
+		import('./exerciseUnit.js').then(({ renderExerciseUnit }) => {
+			renderExerciseUnit(unit, container);
+			updateNavButtons();
+		});
 	} else if (unit.courseUnitTypeName === "lesson") {
 		setCurrentMdIndex(0);
 		const mdPath = parseMdPathFromName(unit.name);
