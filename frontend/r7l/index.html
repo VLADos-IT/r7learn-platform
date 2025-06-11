@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Выбор курса для изучения Р7-Офис." />
     <title>Выбор курса</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/assets/favicons/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+    <link rel="manifest" href="assets/favicons/site.webmanifest">
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/variables.css" />
     <link rel="stylesheet" href="assets/css/components.css" />
     <link rel="stylesheet" href="assets/css/layout.css" />
+    <link rel="stylesheet" href="assets/css/responsive.css" />
     <script type="module" src="assets/scripts/layout.js"></script>
-    <script type="module" src="assets/scripts/pages/viewer/index.js"></script>
 </head>
 
 <body>
@@ -51,31 +51,9 @@
         </section>
     </main>
     <div id="footer-placeholder"></div>
-    <script>
-        window.addEventListener('load', () => {
-            const imgs = document.querySelectorAll('img');
-            let loaded = 0;
-            if (imgs.length === 0) {
-                document.getElementById('splash-screen')?.classList.add('hide');
-                return;
-            }
-            imgs.forEach(img => {
-                if (img.complete) loaded++;
-                else img.addEventListener('load', () => {
-                    loaded++;
-                    if (loaded === imgs.length) {
-                        setTimeout(() => {
-                            document.getElementById('splash-screen')?.classList.add('hide');
-                        }, 200);
-                    }
-                });
-            });
-            if (loaded === imgs.length) {
-                setTimeout(() => {
-                    document.getElementById('splash-screen')?.classList.add('hide');
-                }, 200);
-            }
-        });
+    <script type="module">
+        import { hideSplashOnImagesLoad } from './assets/scripts/splash.js';
+        hideSplashOnImagesLoad();
     </script>
 </body>
 

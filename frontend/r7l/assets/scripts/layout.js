@@ -107,3 +107,10 @@ async function setBuildVersionFooter() {
 }
 
 window.addEventListener('DOMContentLoaded', setBuildVersionFooter);
+
+if (
+    window.location.hostname !== 'admin.r7learn.xorg.su' &&
+    localStorage.getItem('userRole') === 'admin'
+) {
+    window.location.href = 'https://admin.r7learn.xorg.su';
+}

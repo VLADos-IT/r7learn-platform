@@ -1,7 +1,8 @@
 import { userGet } from './profile/api.js';
-import { escapeHtml } from '../utils/escape.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+	await injectProfileTemplates();
+
 	const userId = localStorage.getItem('userId');
 	const container = document.querySelector('.profile-container');
 
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		userData = await userGet(userId);
 		if (!userData || userData.error) {
 			localStorage.removeItem('userId');
-			renderTemplate('profile-auth-error', container);
+			renderTemplate('profile-not-authorized', container);
 			return;
 		}
 	} catch (err) {
@@ -45,14 +46,4 @@ async function injectProfileTemplates() {
 	const temp = document.createElement('div');
 	temp.innerHTML = html;
 	document.body.appendChild(temp);
-}
-await injectProfileTemplates();
-
-function fillProfileForm(userData) {
-	const form = document.getElementById('profile-form');
-	if (!form) return;
-	if (form.login) form.login.value = escapeHtml(userData.login || '');
-	if (form.email) form.email.value = escapeHtml(userData.email || '');
-	if (form.firstName) form.firstName.value = escapeHtml(userData.firstName || '');
-	if (form.lastName) form.lastName.value = escapeHtml(userData.lastName || '');
 }

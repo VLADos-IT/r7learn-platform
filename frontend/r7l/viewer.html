@@ -56,36 +56,9 @@
     <div id="footer-placeholder"></div>
     <script type="module" src="assets/scripts/layout.js"></script>
     <script type="module" src="assets/scripts/pages/viewer/index.js"></script>
-    <script>
-        window.addEventListener('load', () => {
-            const content = document.querySelector('.content');
-            if (!content) {
-                document.getElementById('splash-screen')?.classList.add('hide');
-                return;
-            }
-            const imgs = content.querySelectorAll('img');
-            let loaded = 0;
-            if (imgs.length === 0) {
-                document.getElementById('splash-screen')?.classList.add('hide');
-                return;
-            }
-            imgs.forEach(img => {
-                if (img.complete) loaded++;
-                else img.addEventListener('load', () => {
-                    loaded++;
-                    if (loaded === imgs.length) {
-                        setTimeout(() => {
-                            document.getElementById('splash-screen')?.classList.add('hide');
-                        }, 200);
-                    }
-                });
-            });
-            if (loaded === imgs.length) {
-                setTimeout(() => {
-                    document.getElementById('splash-screen')?.classList.add('hide');
-                }, 200);
-            }
-        });
+    <script type="module">
+        import { hideSplashOnImagesLoad } from './assets/scripts/splash.js';
+        hideSplashOnImagesLoad();
     </script>
 </body>
 

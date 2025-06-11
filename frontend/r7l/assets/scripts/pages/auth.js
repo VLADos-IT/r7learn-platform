@@ -29,8 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 				if (user && user.id) {
 					localStorage.setItem('userId', user.id);
 					localStorage.setItem('login', user.login);
+					localStorage.setItem('userRole', user.positionName);
 					showAlert('Вход выполнен!', 'success');
-					setTimeout(() => window.location.href = 'profile.html', 800);
+					if (user.positionName === 'admin') {
+						setTimeout(() => window.location.href = 'https://admin.r7learn.xorg.su', 800);
+					} else {
+						setTimeout(() => window.location.href = 'profile.html', 800);
+					}
 				} else {
 					showAlert('Неверный логин или пароль');
 					loginForm.password.focus();
@@ -88,7 +93,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 				if (data && data.id) {
 					showAlert('Регистрация успешна!', 'success');
 					localStorage.setItem('userId', data.id);
-					setTimeout(() => window.location.href = 'profile.html', 800);
+					localStorage.setItem('login', data.login);
+					localStorage.setItem('userRole', data.positionName); // Сохраняем роль
+					if (data.positionName === 'admin') {
+						setTimeout(() => window.location.href = 'https://admin.r7learn.xorg.su', 800);
+					} else {
+						setTimeout(() => window.location.href = 'profile.html', 800);
+					}
 				} else {
 					showAlert('Ошибка регистрации. Попробуйте позже.');
 				}

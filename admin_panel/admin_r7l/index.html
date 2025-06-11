@@ -10,10 +10,15 @@
     <link rel="stylesheet" href="assets/css/form.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/auth-error.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
     <link rel="manifest" href="/assets/favicons/site.webmanifest">
+    <script type="module">
+        import { checkAdminAccess } from './assets/scripts/auth-guard.js';
+        checkAdminAccess();
+    </script>
 </head>
 
 <body>
@@ -120,32 +125,10 @@
 
     <div id="footer-placeholder"></div>
     <script type="module" src="assets/scripts/layout.js"></script>
-    <script type="module" src="./assets/scripts/admin.js"></script>
-    <script>
-        window.addEventListener('load', () => {
-            const imgs = document.querySelectorAll('img');
-            let loaded = 0;
-            if (imgs.length === 0) {
-                document.getElementById('splash-screen')?.classList.add('hide');
-                return;
-            }
-            imgs.forEach(img => {
-                if (img.complete) loaded++;
-                else img.addEventListener('load', () => {
-                    loaded++;
-                    if (loaded === imgs.length) {
-                        setTimeout(() => {
-                            document.getElementById('splash-screen')?.classList.add('hide');
-                        }, 200);
-                    }
-                });
-            });
-            if (loaded === imgs.length) {
-                setTimeout(() => {
-                    document.getElementById('splash-screen')?.classList.add('hide');
-                }, 200);
-            }
-        });
+    <script type="module" src="assets/scripts/admin.js"></script>
+    <script type="module">
+        import { hideSplashOnImagesLoad } from './assets/scripts/splash.js';
+        hideSplashOnImagesLoad();
     </script>
 </body>
 

@@ -16,7 +16,8 @@ sed -i '1i # Example environment variables for R7L Platform' "$ENV_FILE"
 
 POSTGRES_PASSWORD=$(tr -dc 'A-Za-z0-9!@#$%^&*()_+=' </dev/urandom | head -c 24)
 
-sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${POSTGRES_PASSWORD}|" "$ENV_FILE"
+sed -i '/^POSTGRES_PASSWORD=/d' "$ENV_FILE"
+echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> "$ENV_FILE"
 
 echo "Generated .env with random password:"
 grep POSTGRES_PASSWORD "$ENV_FILE"

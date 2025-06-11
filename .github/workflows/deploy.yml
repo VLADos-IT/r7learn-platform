@@ -23,5 +23,6 @@ jobs:
             git pull
             if [ ! -f .env ]; then bash scripts/gen_env.sh; fi
             docker compose down --remove-orphans
-            docker compose build
+            docker compose build --no-cache r7l-frontend
+            docker compose build --parallel $(docker compose config --services | grep -v r7l-frontend)
             docker compose up -d

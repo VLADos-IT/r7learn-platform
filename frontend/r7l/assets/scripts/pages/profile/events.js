@@ -113,8 +113,13 @@ export function setupPasswordForm(userData) {
 }
 
 export function setupLogout() {
-	document.getElementById('logout-btn').addEventListener('click', () => {
-		localStorage.removeItem('userId');
-		window.location.href = 'auth.html';
-	});
+	const btn = document.getElementById('logout-btn');
+	if (btn) {
+		btn.addEventListener('click', () => {
+			localStorage.removeItem('userId');
+			localStorage.removeItem('login');
+			localStorage.removeItem('userRole');
+			window.location.href = 'auth.html';
+		});
+	}
 }
