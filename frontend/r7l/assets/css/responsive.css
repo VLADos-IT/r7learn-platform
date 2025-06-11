@@ -126,7 +126,6 @@
 		padding: 1rem;
 		transform: translateX(-100%);
 		position: absolute;
-		z-index: 10;
 	}
 
 	.course-selection {

@@ -91,3 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	loadComponent('/footer.html', 'footer-placeholder', '2.5rem');
 });
+
+async function setBuildVersionFooter() {
+	try {
+		const resp = await fetch('build_version.txt');
+		if (!resp.ok) return;
+		const version = await resp.text();
+		const buildSpan = document.getElementById('footer-build-version');
+		if (buildSpan) {
+			buildSpan.textContent = `Build: ${version.trim()}`;
+		}
+	} catch (e) {
+		// ignore
+	}
+}
+
+window.addEventListener('DOMContentLoaded', setBuildVersionFooter);

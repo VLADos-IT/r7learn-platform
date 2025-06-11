@@ -21,7 +21,7 @@ jobs:
           script: |
             cd /opt/R7L-full
             git pull
-            if [ ! -f .env ]; then cp .env.example .env; fi
+            if [ ! -f .env ]; then bash scripts/gen_env.sh; fi
             docker compose down --remove-orphans
             docker compose build
             docker compose up -d

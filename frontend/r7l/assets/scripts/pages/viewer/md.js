@@ -1,7 +1,7 @@
 import { renderMarkdown } from '../../components/markdown.js';
 import {
 	updateProgress, userMdProgress, setCurrentMdIndex, getCurrentMdIndex,
-	mdBasePath, mdFiles, setMdFiles, setMdBasePath
+	mdBasePath, mdFiles, setMdFiles, setMdBasePath, getCurrentIndex, courseUnits
 } from './core.js';
 import { updateNavButtons } from './nav.js';
 
@@ -41,7 +41,12 @@ export async function loadMdFile(mdPath, mdIndex = 0, unitId = null) {
 }
 
 export function updatePageIndicator(container) {
+	const unit = courseUnits[getCurrentIndex()];
 	const existingIndicator = container.parentNode.querySelector('.page-indicator');
+	if (!unit || unit.courseUnitTypeName !== "lesson") {
+		if (existingIndicator) existingIndicator.remove();
+		return;
+	}
 	const text = `Страница ${getCurrentMdIndex() + 1} из ${mdFiles.length}`;
 	if (existingIndicator) {
 		existingIndicator.innerHTML = text;

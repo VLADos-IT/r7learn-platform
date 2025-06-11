@@ -21,7 +21,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - r7l_postgres_replica_data:/var/lib/postgresql/data
+      - ./backend/DbDefaultQueries/replica-entrypoint.sh:/docker-entrypoint-initdb.d/replica-entrypoint.sh
     command: >
       postgres -c wal_level=replica -c hot_standby=on
     depends_on:
@@ -37,10 +39,9 @@ services:
       - r7l-postgres
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:80
       ConnectionStrings__DefaultConnection: "Server=r7l-postgres;Port=5432;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Database=${POSTGRES_DB}"
     ports:
-      - "5000:80"
+      - "5000:5000"
     volumes:
       - ./resources:/resources
     networks:
@@ -135,20 +136,22 @@ services:
     networks:
       - r7l-network
 
-  integration-test:
-    image: python:3.11
+  r7l-integration-test:
+    build:
+      context: ./integration_test
+      dockerfile: Dockerfile
+    container_name: r7l-integration-test
     depends_on:
       - r7l-backend
       - r7l-frontend
       - r7l-admin-panel
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: /bin/sh -c "pip install requests && python integration_test.py"
     networks:
       - r7l-network
+    volumes:
+      - /opt/R7L-full/error_log:/app/error_log
 volumes:
   r7l_postgres_data:
+  r7l_postgres_replica_data:
 
 networks:
   r7l-network:

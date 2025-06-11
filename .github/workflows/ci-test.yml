@@ -47,7 +47,7 @@ jobs:
 
       - name: Wait and run integration tests
         run: |
-          docker compose run --rm integration-test || (
+          docker compose run --rm r7l-integration-test || (
             docker compose logs > compose-logs.txt
             cat compose-logs.txt
             exit 1

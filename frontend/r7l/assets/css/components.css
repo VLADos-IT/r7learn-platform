@@ -109,15 +109,15 @@ button:hover {
 	box-shadow: 0 0 0 6px #ffb3b3 inset;
 }
 
-.course-card--word {
-	box-shadow: 0 0 0 4px #d6eaff inset;
-	background: linear-gradient(135deg, #f0f7ff 60%, #d6eaff 100%);
+.course-card--text {
+	box-shadow: 0 0 0 4px #d6d6ff inset;
+	background: linear-gradient(135deg, #f0f0ff 60%, #d6d6ff 100%);
 	transition: background 0.4s, box-shadow 0.4s;
 }
 
-.course-card--word:hover {
-	background: linear-gradient(135deg, #d6eaff 80%, #f0f7ff 100%);
-	box-shadow: 0 0 0 6px #a3d4ff inset;
+.course-card--text:hover {
+	background: linear-gradient(135deg, #d6d6ff 80%, #f0f0ff 100%);
+	box-shadow: 0 0 0 6px #b3b3ff inset;
 }
 
 .splash-screen {
@@ -137,10 +137,14 @@ button:hover {
 }
 
 .btn-icon {
-	width: 1.3em;
-	height: 1.3em;
+	width: 1.2em;
+	height: 1.2em;
 	vertical-align: middle;
 	margin-right: 0.5em;
+	margin-bottom: 0;
+	display: inline-block;
+	position: relative;
+	top: -0.08em;
 	filter: grayscale(0.2) brightness(0.95);
 	opacity: 0.85;
 	transition: opacity 0.2s;

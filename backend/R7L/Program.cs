@@ -21,14 +21,6 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5000);
-});
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontendAndAdmin", policy =>
@@ -52,12 +44,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//SERVER
+/*app.UseHttpsRedirection();
 
-app.UseHttpsRedirection();
-
-// SERVER => DELETE LINE:
-//app.UseAuthorization();
-
+SERVER => DELETE LINE:
+app.UseAuthorization();
+*/
 
 app.UseCors("AllowFrontendAndAdmin");
 

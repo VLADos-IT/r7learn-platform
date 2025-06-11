@@ -9,6 +9,7 @@
 - **TestCreator** — test generator from txt
 - **nginx** — internal reverse-proxy for services
 - **EXTERNAL_nginx_configurations** — external nginx configs for VDS
+- **integration_test** — automated integration tests (Dockerized)
 
 ---
 
@@ -27,6 +28,8 @@ R7L-full/
 ├── frontend/            # Main user frontend
 ├── nginx/               # Nginx configs and .htpasswd
 ├── resources/           # Uploaded files
+├── integration_test/    # Integration tests
+├── scripts/             # Utility scripts
 ├── docker-compose.yml   # Docker Compose configuration
 ├── .env                 # Environment variables
 ```
@@ -46,9 +49,8 @@ R7L-full/
 ```sh
 cd /opt/R7L_full/scripts
 
-bash make.sh
-
-bash cleanup.sh
+bash cleanup.sh     # Clean up all containers, images, system cache
+bash make.sh        # Build and start all services
 ```
 
 ---
@@ -63,14 +65,20 @@ git clone https://github.com/VLADos-IT/R7L_full.git
 cd R7L_full
 ```
 
-### 2. Build and run all services
+### 2. Generate .env file
+
+```sh
+bash scripts/gen_env.sh
+```
+
+### 3. Build and run all services
 
 ```sh
 docker compose build
 docker compose up -d
 ```
 
-### 3. Nginx and Let's Encrypt
+### 4. Nginx and Let's Encrypt
 
 ```sh
 cp /opt/R7L-full/EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/sites-available/
@@ -83,16 +91,56 @@ certbot --nginx -d r7learn.xorg.su -d admin.r7learn.xorg.su
 systemctl restart nginx
 ```
 
-### 4. Fix access rights for uploads
+### 5. Fix access rights for uploads
 
 ```sh
 chown -R 101:101 ./resources
 ```
 
-### 5. Check the services
+### 6. Check the services
 
 - **User interface:**  <https://r7learn.xorg.su>
 - **Admin panel:**  <https://admin.r7learn.xorg.su>
+
+---
+
+...
+
+## Backup and Restore
+
+### Backup
+
+```sh
+bash scripts/backup.sh
+```
+
+CRONtab
+
+```sh
+0 */3 * * * /opt/R7L-full/scripts/backup.sh
+```
+
+### Restore
+
+```sh
+docker exec -i r7l-postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < /opt/r7l_backups/db_backup_YYYY-MM-DD_HH-MM-SS.sql
+```
+
+```sh
+tar xzf /opt/r7l_backups/resources_YYYY-MM-DD_HH-MM-SS.tar.gz -C /opt/R7L-full/resources
+```
+
+---
+
+## Integration Tests
+
+Integration tests run automatically via Docker Compose.
+
+To run manually:
+
+```sh
+docker compose run --rm integration-test
+```
 
 ---
 

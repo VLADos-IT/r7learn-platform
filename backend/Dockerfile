@@ -17,7 +17,9 @@ COPY --from=build /app/publish .
 
 ENV ASPNETCORE_URLS=http://+:5000 \
     ASPNETCORE_ENVIRONMENT=Development \
-    DOTNET_EnableDiagnostics=0
+    DOTNET_EnableDiagnostics=0 \
+    HTTP_PORTS= \
+    HTTPS_PORTS=
 
 USER appuser
 

@@ -1,8 +1,9 @@
 import { getCourseUnits } from '../../api/course.js';
 import { getCourseProgress, updateCourseProgress } from '../../api/progress.js';
 import { getTest } from '../../api/test.js';
-import { loadMdFile } from './md.js';
+import { loadMdFile, updatePageIndicator } from './md.js';
 import { updateNavButtons } from './nav.js';
+import { buildicons } from '../../components/menu.js';
 
 export let progressList = [];
 export let currentIndex = 0;
@@ -32,11 +33,13 @@ export function loadPage(index) {
 	}
 	const unit = courseUnits[index];
 
-	document.querySelectorAll('.icons-section').forEach((el, idx) => {
-		el.classList.toggle('active', idx === index);
+	const container = document.getElementById("markdown-content");
+
+	buildicons(courseUnits, index, progressList, (idx) => {
+		loadPage(idx);
 	});
 
-	const container = document.getElementById("markdown-content");
+	updatePageIndicator(container);
 
 	if (unit.courseUnitTypeName === "test") {
 		setCurrentMdIndex(0);
@@ -62,6 +65,7 @@ export function loadPage(index) {
 			renderExerciseUnit(unit, container);
 			updateNavButtons();
 		});
+		updateNavButtons();
 	} else if (unit.courseUnitTypeName === "lesson") {
 		setCurrentMdIndex(0);
 		const mdPath = parseMdPathFromName(unit.name);
