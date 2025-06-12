@@ -1,7 +1,9 @@
+import { showSplashScreen, hideSplashOnImagesLoad } from '../../components/splash.js';
 import { getTest } from '../../api/test.js';
 
 export async function renderTestUnit(unit, container) {
 	container.innerHTML = '';
+	showSplashScreen();
 	try {
 		const test = await getTest(unit.id);
 		if (test && test.questions && test.questions.length) {
@@ -12,5 +14,7 @@ export async function renderTestUnit(unit, container) {
 		}
 	} catch (e) {
 		container.innerHTML = `<p>Ошибка загрузки теста: ${e.message}</p>`;
+	} finally {
+		hideSplashOnImagesLoad();
 	}
 }

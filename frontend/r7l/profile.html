@@ -12,24 +12,23 @@
 	<link rel="stylesheet" href="assets/css/components.css" />
 	<link rel="import" href="assets/pages/profile.templates.html">
 	<link rel="apple-touch-icon" sizes="180x180" href="./assets/favicons/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicons/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicons/favicon-16x16.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
 	<link rel="manifest" href="./assets/favicons/site.webmanifest">
 	<link rel="import" href="assets/pages/profile.templates.html">
 </head>
 
 <body>
-	<div id="splash-screen" class="splash-screen">
-		<span class="btn-spinner" style="display:inline-block;">
-			<svg width="48" height="48" viewBox="0 0 50 50">
-				<circle cx="25" cy="25" r="20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"
-					stroke-dasharray="31.415, 31.415">
-					<animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s"
-						repeatCount="indefinite" />
-				</circle>
-			</svg>
-		</span>
-	</div>
+	<script type="module">
+		import { injectSplashScreen, showSplashScreen } from './assets/scripts/components/splash.js';
+		injectSplashScreen();
+		showSplashScreen();
+	</script>
+	<script>
+		if (!localStorage.getItem('userId')) {
+			window.location.href = 'auth.html';
+		}
+	</script>
 	<div id="header-placeholder"></div>
 	<main>
 		<div class="profile-container">
@@ -50,10 +49,6 @@
 	<div id="footer-placeholder"></div>
 	<script type="module" src="assets/scripts/layout.js"></script>
 	<script type="module" src="assets/scripts/pages/profile.js"></script>
-	<script type="module">
-		import { hideSplashOnImagesLoad } from './assets/scripts/splash.js';
-		hideSplashOnImagesLoad();
-	</script>
 </body>
 
 </html>

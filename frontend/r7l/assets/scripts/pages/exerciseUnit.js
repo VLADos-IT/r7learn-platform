@@ -67,5 +67,6 @@ export async function renderExerciseUnit(unit, container) {
 		} else {
 			resultBlock.appendChild(exercise.renderExerciseFail(data.differences));
 		}
+		if (window.refreshProgressAndicons) window.refreshProgressAndicons();
 	});
 }

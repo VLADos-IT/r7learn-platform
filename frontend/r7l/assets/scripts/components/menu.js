@@ -1,3 +1,5 @@
+import { showSplashScreen, hideSplashOnImagesLoad } from '../components/splash.js';
+
 export function buildicons(courseUnits, currentIndex, progressList, onSelect) {
 	const icons = document.getElementById("icons");
 	if (!icons) return;
@@ -33,7 +35,10 @@ export function buildicons(courseUnits, currentIndex, progressList, onSelect) {
 		progressWrapper.appendChild(progressBar);
 		li.appendChild(progressWrapper);
 
-		li.onclick = () => onSelect(idx);
+		li.onclick = () => {
+			showSplashScreen();
+			onSelect(idx);
+		};
 		icons.appendChild(li);
 	});
 }

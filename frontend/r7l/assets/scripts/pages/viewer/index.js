@@ -1,11 +1,17 @@
 import { buildicons } from '../../components/menu.js';
-import { setupNavigation } from '../../components/navigation.js';
+import { updateNavButtons } from './nav.js';
 import * as core from './core.js';
 import './prevNext.js';
+import { injectSplashScreen, showSplashScreen, hideSplashOnImagesLoad } from '../../components/splash.js';
 
-let currentIndex = 0;
-export function getCurrentIndex() { return currentIndex; }
-export function setCurrentIndex(val) { currentIndex = val; }
+injectSplashScreen();
+
+async function handlePageLoad(idx) {
+	showSplashScreen();
+	await core.loadPage(idx);
+	hideSplashOnImagesLoad();
+	updateNavButtons();
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 	const courseId = core.getCourseIdFromURL();
@@ -14,9 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 	if (!container) return;
 	if (!courseId || !userId) {
 		container.innerHTML = `<h1>Ошибка</h1><p>Курс или пользователь не определён.</p>`;
+		hideSplashOnImagesLoad();
 		return;
 	}
 	try {
+		showSplashScreen();
 		await core.loadCourseUnits(courseId);
 		await core.loadProgress(courseId, userId);
 		let savedIndex = 0;
@@ -27,52 +35,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 		if (core.courseUnits && core.courseUnits.length > 0) {
 			buildicons(core.courseUnits, savedIndex, core.progressList, (idx) => {
-				core.loadPage(idx);
+				handlePageLoad(idx);
 			});
-			core.loadPage(savedIndex);
-			setupNavigation(
-				() => { window.prevPage(); },
-				() => { window.nextPage(); }
-			);
+			await handlePageLoad(savedIndex);
 		} else {
 			container.innerHTML = `<h1>Нет тем в курсе</h1>`;
 			document.getElementById("icons").innerHTML = "";
+			hideSplashOnImagesLoad();
 		}
 	} catch (e) {
 		container.innerHTML = `<h1>Ошибка</h1><p>${e.message}</p>`;
 		document.getElementById("icons").innerHTML = "";
+		hideSplashOnImagesLoad();
 	}
 });
 
 window.refreshProgressAndicons = async function () {
 	const courseId = core.getCourseIdFromURL();
 	const userId = core.getUserId();
-	if (!courseId || !userId) return;
 	await core.loadProgress(courseId, userId);
-	buildicons(core.courseUnits, core.currentIndex, core.progressList, (idx) => {
-		core.loadPage(idx);
+	buildicons(core.courseUnits, core.getCurrentIndex(), core.progressList, (idx) => {
+		handlePageLoad(idx);
 	});
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-	const container = document.getElementById('viewer-container');
-	if (!container) {
-		return;
-	}
-	const markdown = document.querySelector('.markdown');
-	const navButtons = document.querySelector('.nav-buttons');
-	if (!markdown || !navButtons) return;
-
-	function updateNavVisibility() {
-		if (markdown.scrollTop > 85) {
-			navButtons.classList.add('visible');
-		} else {
-			navButtons.classList.remove('visible');
-		}
-	}
-
-	navButtons.classList.remove('visible');
-	markdown.addEventListener('scroll', updateNavVisibility);
-
-	updateNavVisibility();
-});

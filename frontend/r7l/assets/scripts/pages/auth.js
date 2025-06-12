@@ -1,5 +1,6 @@
 import { userAuth, userCreate, userCheckUnique } from '../api/user.js';
 import { showAlert } from '../components/alert.js';
+import { hideSplashOnImagesLoad } from '../components/splash.js';
 
 function fadeIn(el) {
 	el.classList.add('fade-in');
@@ -19,7 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 		loginForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const btn = loginForm.querySelector('button[type="submit"]');
-			btn && (btn.disabled = true);
+			btn.disabled = true;
+			btn.querySelector('.btn-text').style.display = 'none';
+			btn.querySelector('.btn-spinner').style.display = '';
 			const payload = {
 				login: loginForm.login.value,
 				password: loginForm.password.value,
@@ -31,11 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 					localStorage.setItem('login', user.login);
 					localStorage.setItem('userRole', user.positionName);
 					showAlert('Вход выполнен!', 'success');
-					if (user.positionName === 'admin') {
-						setTimeout(() => window.location.href = 'https://admin.r7learn.xorg.su', 800);
-					} else {
-						setTimeout(() => window.location.href = 'profile.html', 800);
-					}
+					setTimeout(() => {
+						window.location.href = user.positionName === 'admin'
+							? 'https://admin.r7learn.xorg.su'
+							: 'profile.html';
+					}, 800);
 				} else {
 					showAlert('Неверный логин или пароль');
 					loginForm.password.focus();
@@ -43,7 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 			} catch (err) {
 				showAlert('Ошибка авторизации');
 			} finally {
-				btn && (btn.disabled = false);
+				btn.disabled = false;
+				btn.querySelector('.btn-text').style.display = '';
+				btn.querySelector('.btn-spinner').style.display = 'none';
 			}
 		});
 		loginForm.addEventListener('keydown', (e) => {
@@ -61,7 +66,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 		registerForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const btn = registerForm.querySelector('button[type="submit"]');
-			btn && (btn.disabled = true);
+			btn.disabled = true;
+			btn.querySelector('.btn-text').style.display = 'none';
+			btn.querySelector('.btn-spinner').style.display = '';
 			const payload = {
 				login: registerForm.login.value,
 				password: registerForm.password.value,
@@ -72,7 +79,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 			if (payload.password.length < 6) {
 				showAlert('Пароль должен быть не менее 6 символов');
 				registerForm.password.focus();
-				btn && (btn.disabled = false);
+				btn.disabled = false;
+				btn.querySelector('.btn-text').style.display = '';
+				btn.querySelector('.btn-spinner').style.display = 'none';
 				return;
 			}
 			try {
@@ -80,13 +89,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 				if (!unique.loginIsUnique) {
 					showAlert('Такой логин уже занят, попробуйте другой.');
 					registerForm.login.focus();
-					btn && (btn.disabled = false);
+					btn.disabled = false;
+					btn.querySelector('.btn-text').style.display = '';
+					btn.querySelector('.btn-spinner').style.display = 'none';
 					return;
 				}
 				if (!unique.emailIsUnique) {
 					showAlert('Этот email уже используется другим пользователем.');
 					registerForm.email.focus();
-					btn && (btn.disabled = false);
+					btn.disabled = false;
+					btn.querySelector('.btn-text').style.display = '';
+					btn.querySelector('.btn-spinner').style.display = 'none';
 					return;
 				}
 				const data = await userCreate(payload);
@@ -94,19 +107,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 					showAlert('Регистрация успешна!', 'success');
 					localStorage.setItem('userId', data.id);
 					localStorage.setItem('login', data.login);
-					localStorage.setItem('userRole', data.positionName); // Сохраняем роль
-					if (data.positionName === 'admin') {
-						setTimeout(() => window.location.href = 'https://admin.r7learn.xorg.su', 800);
-					} else {
-						setTimeout(() => window.location.href = 'profile.html', 800);
-					}
+					localStorage.setItem('userRole', data.positionName);
+					setTimeout(() => {
+						window.location.href = data.positionName === 'admin'
+							? 'https://admin.r7learn.xorg.su'
+							: 'profile.html';
+					}, 800);
 				} else {
 					showAlert('Ошибка регистрации. Попробуйте позже.');
 				}
 			} catch (err) {
 				showAlert('Ошибка регистрации. Попробуйте позже.');
 			} finally {
-				btn && (btn.disabled = false);
+				btn.disabled = false;
+				btn.querySelector('.btn-text').style.display = '';
+				btn.querySelector('.btn-spinner').style.display = 'none';
 			}
 		});
 		registerForm.addEventListener('keydown', (e) => {
@@ -140,4 +155,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 			loginForm.login.focus();
 		});
 	}
+	hideSplashOnImagesLoad();
 });

@@ -4,6 +4,9 @@
 	justify-content: center;
 	gap: 2rem;
 	text-align: center;
+	width: 100%;
+	box-sizing: border-box;
+	margin-top: 0;
 }
 
 .course-card {
@@ -122,18 +125,65 @@ button:hover {
 
 .splash-screen {
 	position: fixed;
-	z-index: 9999;
+	z-index: 10000;
 	inset: 0;
-	background: rgba(47, 62, 70, 0.95);
+	background: rgba(47, 62, 70, 0.85);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: opacity 0.4s;
-}
-
-.splash-screen.hide {
 	opacity: 0;
 	pointer-events: none;
+	transition: opacity 0.35s;
+}
+
+.splash-screen.splash-visible {
+	opacity: 1;
+	pointer-events: all;
+}
+
+.splash-screen.splash-hide {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.splash-spinner-wrap {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2.5rem 3.5rem;
+	background: rgba(255, 255, 255, 0.10);
+	border-radius: 1.5rem;
+	box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.10);
+	animation: splash-pop 0.6s cubic-bezier(.23, 1.02, .56, .98);
+}
+
+@keyframes splash-pop {
+	0% {
+		transform: scale(0.92) translateY(30px);
+		opacity: 0;
+	}
+
+	100% {
+		transform: scale(1) translateY(0);
+		opacity: 1;
+	}
+}
+
+.splash-spinner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.splash-spinner svg {
+	display: block;
+}
+
+.splash-spinner circle {
+	stroke: url(#splash-spinner-gradient);
+	stroke-width: 5;
+	stroke-linecap: round;
+	filter: drop-shadow(0 0 8px #0078d7cc);
 }
 
 .btn-icon {
@@ -152,4 +202,51 @@ button:hover {
 
 button:disabled .btn-icon {
 	opacity: 0.5;
+}
+
+.splash-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 2.5rem 3.5rem;
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 1.5rem;
+	box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.10);
+	animation: splash-pop 0.6s cubic-bezier(.23, 1.02, .56, .98);
+}
+
+@keyframes splash-pop {
+	0% {
+		transform: scale(0.92) translateY(30px);
+		opacity: 0;
+	}
+
+	100% {
+		transform: scale(1) translateY(0);
+		opacity: 1;
+	}
+}
+
+.splash-logo-anim {
+	margin-bottom: 1.5rem;
+}
+
+.splash-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #2f3e46;
+	letter-spacing: 0.01em;
+	text-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+}
+
+.nav-btns-flex {
+	display: flex;
+	justify-content: space-between;
+	gap: 1em;
+}
+
+.nav-btn-hidden {
+	visibility: hidden;
+	/* или opacity: 0; */
 }
