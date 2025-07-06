@@ -57,6 +57,17 @@ export function renderExerciseLoading() {
 	return renderTemplate('exercise-loading');
 }
 
+import { showAlert } from '../components/alert.js';
+
 export function renderExerciseError(error) {
-	return renderTemplate('exercise-load-error', { error });
+	let userMessage = 'Не удалось загрузить задание. Попробуйте обновить страницу.';
+	if (typeof error === 'string' && error.trim()) {
+		userMessage = error;
+	}
+	showAlert(userMessage, 'error');
+	const block = renderTemplate('exercise-load-error', { error: userMessage });
+	if (block) return block;
+	const wrapper = document.createElement('div');
+	wrapper.innerHTML = `<span style="color:red;">${userMessage}</span>`;
+	return wrapper;
 }

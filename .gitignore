@@ -97,8 +97,7 @@ resources/.DS_Store
 # Ignore docker-compose override
 docker-compose.override.yml
 
-.env.*
-!.env
+.env
 !.env.example
 
 .Trashes

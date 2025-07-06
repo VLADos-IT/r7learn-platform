@@ -36,6 +36,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Network monitoring create
+        run: docker network create monitoring-net || true
+
+      - name: Network r7l create
+        run: docker network create r7l-network || true
+
       - name: Build all containers
         run: docker compose build
 

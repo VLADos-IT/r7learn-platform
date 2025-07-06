@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function setBuildVersionFooter() {
 	try {
-		const resp = await fetch('build_version.txt');
+		const resp = await fetch('/r7l/build_version.json');
 		if (!resp.ok) return;
 		const version = await resp.text();
 		const buildSpan = document.getElementById('footer-build-version');
@@ -102,15 +102,14 @@ async function setBuildVersionFooter() {
 			buildSpan.textContent = `Build: ${version.trim()}`;
 		}
 	} catch (e) {
-		// ignore
 	}
 }
 
 window.addEventListener('DOMContentLoaded', setBuildVersionFooter);
 
 if (
-    window.location.hostname !== 'admin.r7learn.xorg.su' &&
-    localStorage.getItem('userRole') === 'admin'
+	window.location.hostname !== 'admin.r7learn.xorg.su' &&
+	localStorage.getItem('userRole') === 'admin'
 ) {
-    window.location.href = 'https://admin.r7learn.xorg.su';
+	window.location.href = 'https://admin.r7learn.xorg.su';
 }

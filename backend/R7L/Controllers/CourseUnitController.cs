@@ -2,6 +2,7 @@
 using R7L.DTO.CourseUnit;
 using R7L.Services.CourseUnit;
 using R7L.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace R7L.Controllers;
 
@@ -11,12 +12,10 @@ public class CourseUnitController : Controller
 {
     private readonly ICourseUnitService _service;
 
-
     public CourseUnitController(ICourseUnitService courseUnitService)
     {
         _service = courseUnitService;
     }
-
 
     [HttpPost("Create")]
     public async Task<ActionResult<CourseUnitReadDTO>> CreateCourseUnit(

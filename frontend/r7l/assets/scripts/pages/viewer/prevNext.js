@@ -2,7 +2,7 @@ import { showSplashScreen, hideSplashOnImagesLoad } from '../../components/splas
 import { renderMarkdown } from '../../components/markdown.js';
 import { mdFiles, mdBasePath } from './core.js';
 import {
-	updateProgress, loadProgress, getCourseIdFromURL, getUserId,
+	updateProgress, loadProgress, getCourseIdFromURL,
 	courseUnits, progressList, getCurrentIndex, setCurrentMdIndex, getCurrentMdIndex
 } from './core.js';
 import { loadPage } from './core.js';
@@ -15,13 +15,15 @@ window.prevPage = async function () {
 		setCurrentMdIndex(getCurrentMdIndex() - 1);
 		const container = document.getElementById("markdown-content");
 		const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-		const md = await fetch(mdFiles[getCurrentMdIndex()]).then(resp => resp.text());
+		const token = localStorage.getItem('jwt');
+		const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+		const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
 		renderMarkdown(md, container, mdBasePath, mdFileName);
 		updatePageIndicator(container);
 		updateNavButtons();
 		const unit = courseUnits[getCurrentIndex()];
 		await updateProgress(unit.id, getCurrentMdIndex());
-		await loadProgress(getCourseIdFromURL(), getUserId());
+		await loadProgress(getCourseIdFromURL());
 		const { buildicons } = await import('../../components/menu.js');
 		buildicons(courseUnits, getCurrentIndex(), progressList, (idx) => {
 			showSplashScreen();
@@ -46,13 +48,15 @@ window.nextPage = async function () {
 		setCurrentMdIndex(getCurrentMdIndex() + 1);
 		const container = document.getElementById("markdown-content");
 		const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-		const md = await fetch(mdFiles[getCurrentMdIndex()]).then(resp => resp.text());
+		const token = localStorage.getItem('jwt');
+		const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+		const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
 		renderMarkdown(md, container, mdBasePath, mdFileName);
 		updatePageIndicator(container);
 		updateNavButtons();
 		const unit = courseUnits[getCurrentIndex()];
 		await updateProgress(unit.id, getCurrentMdIndex());
-		await loadProgress(getCourseIdFromURL(), getUserId());
+		await loadProgress(getCourseIdFromURL());
 		const { buildicons } = await import('../../components/menu.js');
 		buildicons(courseUnits, getCurrentIndex(), progressList, (idx) => {
 			showSplashScreen();

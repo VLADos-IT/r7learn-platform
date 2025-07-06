@@ -25,7 +25,7 @@
 		showSplashScreen();
 	</script>
 	<script>
-		if (!localStorage.getItem('userId')) {
+		if (!localStorage.getItem('jwt')) {
 			window.location.href = 'auth.html';
 		}
 	</script>

@@ -1,0 +1,118 @@
+services:
+  r7l-grafana:
+    image: grafana/grafana:latest
+    container_name: r7l-grafana
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring-net
+      - r7l-network
+    depends_on:
+      - r7l-prometheus
+
+  r7l-loki:
+    image: grafana/loki:latest
+    container_name: r7l-loki
+    networks:
+      - monitoring-net
+
+  r7l-prometheus:
+    image: prom/prometheus:latest
+    container_name: r7l-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring-net
+      - r7l-network
+
+  r7l-alertmanager:
+    image: prom/alertmanager:latest
+    container_name: r7l-alertmanager
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring-net
+
+  r7l-monitor-nginx:
+    image: nginx:alpine
+    container_name: r7l-monitor-nginx
+    volumes:
+      - ./nginx/monitor.r7learn.xorg.su.conf:/etc/nginx/conf.d/monitor.r7learn.xorg.su.conf
+    ports:
+      - "8084:80"
+    networks:
+      - monitoring-net
+      - r7l-network
+    depends_on:
+      - r7l-grafana
+
+  r7l-promtail:
+    image: grafana/promtail:latest
+    container_name: r7l-promtail
+    volumes:
+      - /var/log:/var/log
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring-net
+      - r7l-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - monitoring-net
+      - r7l-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: r7l-postgres-exporter
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_EXPORTER_CONFIG_PATH=/dev/null
+    networks:
+      - monitoring-net
+      - r7l-network
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: r7l-nginx-exporter
+    command:
+      - --nginx.scrape-uri=http://r7l-nginx:80/stub_status
+    ports:
+      - "9113:9113"
+    networks:
+      - monitoring-net
+      - r7l-network
+
+networks:
+  monitoring-net:
+    external: true
+  r7l-network:
+    external: true

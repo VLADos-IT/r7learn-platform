@@ -8,8 +8,9 @@
 - **converter** — docx → markdown converter
 - **TestCreator** — test generator from txt
 - **nginx** — internal reverse-proxy for services
-- **EXTERNAL_nginx_configurations** — external nginx configs for VDS
-- **integration_test** — automated integration tests (Dockerized)
+- **EXTERNAL_nginx_configurations** — external nginx configs
+- **integration_test** — automated integration tests
+- **Monitoring** — system monitor for platform
 
 ---
 
@@ -28,6 +29,7 @@ R7L-full/
 ├── frontend/            # Main user frontend
 ├── nginx/               # Nginx configs and .htpasswd
 ├── resources/           # Uploaded files
+├── monitoring/          # System Monitor (R7L-monitor)
 ├── integration_test/    # Integration tests
 ├── scripts/             # Utility scripts
 ├── docker-compose.yml   # Docker Compose configuration
@@ -39,6 +41,7 @@ R7L-full/
 - `POSTGRES_USER` — database user name
 - `POSTGRES_PASSWORD` — database user password
 - `POSTGRES_DB` — database name
+- `JWT_SECRET` — JWT Secret for backend authentication
 
 ---
 
@@ -47,33 +50,44 @@ R7L-full/
 > **Use provided scripts for fast setup and maintenance**
 
 ```sh
-cd /opt/R7L_full/scripts
-
-bash cleanup.sh     # Clean up all containers, images, system cache
+cd /opt/R7L-full/
+mv .env.example ./scripts
+cd /opt/R7L-full/scripts
+bash gen_env.sh
+mv .env ../
+nano make.sh        # EDIT EMAIL
 bash make.sh        # Build and start all services
 ```
 
+> ⚠️ **WARNING:**
+> R7L-monitor not start with make.sh, please run service manual.
+
 ---
 
-## Fully Manual Start (Step-by-step Guide)
+## Manual Setup (Step-by-step Guide)
 
 ### 1. Clone the repository
 
 ```sh
 cd /opt/
-git clone https://github.com/VLADos-IT/R7L_full.git
-cd R7L_full
+git clone https://github.com/VLADos-IT/R7L-full.git
+cd R7L-full
 ```
 
 ### 2. Generate .env file
 
 ```sh
-bash scripts/gen_env.sh
+cd /opt/R7L-full/
+cp .env.example ./scripts
+cd ./scripts
+bash gen_env.sh
+mv .env ../
 ```
 
 ### 3. Build and run all services
 
 ```sh
+docker network create r7l-network
 docker compose build
 docker compose up -d
 ```
@@ -85,9 +99,13 @@ cp /opt/R7L-full/EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/s
 ln -s /etc/nginx/sites-available/r7learn.xorg.su.conf /etc/nginx/sites-enabled/
 cp /opt/R7L-full/EXTERNAL_nginx_configurations/admin.r7learn.xorg.su.conf /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/admin.r7learn.xorg.su.conf /etc/nginx/sites-enabled/
+cp /opt/R7L-full/EXTERNAL_nginx_configurations/monitor.r7learn.xorg.su.conf /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/monitor.r7learn.xorg.su.conf /etc/nginx/sites-enabled/
 cp /opt/R7L-full/nginx/.htpasswd /etc/nginx/
 systemctl start nginx
-certbot --nginx -d r7learn.xorg.su -d admin.r7learn.xorg.su
+certbot --nginx -d r7learn.xorg.su
+certbot --nginx -d admin.r7learn.xorg.su
+certbot --nginx -d monitor.r7learn.xorg.su
 systemctl restart nginx
 ```
 
@@ -95,16 +113,25 @@ systemctl restart nginx
 
 ```sh
 chown -R 101:101 ./resources
+chown -R 101:101 ./backend/DataProtection-Keys
+chown -R 472:472 ./grafana/data
 ```
 
-### 6. Check the services
+### 6. Create System Monitoring
+
+```sh
+mkdir /opt/R7L-monitor
+cp -r /opt/R7L-full/monitoring /opt/R7L-monitor
+docker network create monitoring-net
+cd /opt/R7L-monitor
+docker compose -f docker-compose.monitoring.yml up -d
+```
+
+### 7. Check the services
 
 - **User interface:**  <https://r7learn.xorg.su>
 - **Admin panel:**  <https://admin.r7learn.xorg.su>
-
----
-
-...
+- **Monitor panel:**  <https://monitor.r7learn.xorg.su>
 
 ## Backup and Restore
 
@@ -112,12 +139,6 @@ chown -R 101:101 ./resources
 
 ```sh
 bash scripts/backup.sh
-```
-
-CRONtab
-
-```sh
-0 */3 * * * /opt/R7L-full/scripts/backup.sh
 ```
 
 ### Restore
@@ -134,7 +155,7 @@ tar xzf /opt/r7l_backups/resources_YYYY-MM-DD_HH-MM-SS.tar.gz -C /opt/R7L-full/r
 
 ## Integration Tests
 
-Integration tests run automatically via Docker Compose.
+Integration tests run automatically via Docker Compose on build.
 
 To run manually:
 
@@ -143,6 +164,10 @@ docker compose run --rm integration-test
 ```
 
 ---
+
+## API Reference
+
+See [docs/API.md](./docs/API.md) for a full description of all backend API endpoints, request/response formats, and error handling.
 
 ## Update
 
@@ -166,6 +191,11 @@ docker compose up -d
 > `docker compose down -v --remove-orphans` will remove all Docker volumes, including your database volume.  
 > **This will erase all database data!**  
 > Use with caution and only if you have backups or do not need the data.
+> **Recommended:**  
+> Use the script:  
+> `bash scripts/cleanup.sh`
+
+Fully uninstall:
 
 ```sh
 docker compose down
@@ -173,7 +203,15 @@ docker system prune -a --volumes --force &&  docker builder prune --all --force
 docker compose down -v --remove-orphans
 rm -rf /etc/nginx/sites-enabled/r7learn.xorg.su.conf
 rm -rf /etc/nginx/sites-enabled/admin.r7learn.xorg.su.conf
+rm -rf /etc/nginx/sites-enabled/monitor.r7learn.xorg.su.conf
 systemctl reload nginx
+```
+
+**MONITORING:**
+> Alerts to email setup on webpage monitoring system.
+
+```sh
+docker compose -f docker-compose.monitoring.yml down -v --remove-orphans
 ```
 
 ---
@@ -183,4 +221,6 @@ systemctl reload nginx
 ```sh
 certbot delete --cert-name r7learn.xorg.su
 certbot delete --cert-name admin.r7learn.xorg.su
+certbot delete --cert-name monitor.r7learn.xorg.su
+
 ```

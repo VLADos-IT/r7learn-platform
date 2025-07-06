@@ -12,7 +12,7 @@ test_course_unit_type_name = "test"
 # backend API:
 url_base = "http://r7l-backend:5000/api/"
 endpoint_host = "0.0.0.0"
-endpoint_port = 8000
+endpoint_port = 8001
 
 
 class TestCreateDTO(BaseModel):
@@ -27,12 +27,10 @@ class Question:
         self.is_multi = False
         self.question = "Question"
         self.options = []
-    
 
     def set_question_id(self, question_id: int):
         for option in self.options:
             option.question_id = question_id
-
 
     def to_dict(self):
         type_name = single_question_type_name
@@ -40,11 +38,10 @@ class Question:
             type_name = multi_question_type_name
 
         return {
-            "testId" : self.test_id,
+            "testId": self.test_id,
             "typeName": type_name,
             "question": self.question
         }
-    
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -56,18 +53,15 @@ class QuestionOption:
         self.content = "Content"
         self.is_correct = False
 
-
     def to_dict(self):
         return {
             "questionId": self.question_id,
             "content": self.content,
             "isCorrect": self.is_correct
         }
-    
 
     def to_json(self):
         return json.dumps(self.to_dict())
-
 
 
 def get_txt_file_lines(txt_file_path):
@@ -79,7 +73,7 @@ def get_txt_file_lines(txt_file_path):
             if cleaned_line == '':
                 continue
             result.append(cleaned_line)
-    
+
     return result
 
 
@@ -115,7 +109,7 @@ def parse_test_info(test_info_path):
 
                 current_question.options.append(current_question_option)
                 i += 1
-            
+
             questions.append(current_question)
 
     return name, description, questions
@@ -173,7 +167,8 @@ def post_test_question_option(option: QuestionOption):
 def create_test(test_info_path: str, course_id: int, order_in_course: int):
     name, description, questions = parse_test_info(test_info_path)
 
-    course_unit_id = post_test_course_unit(course_id, order_in_course, name, len(questions))
+    course_unit_id = post_test_course_unit(
+        course_id, order_in_course, name, len(questions))
     test_id = post_test(course_unit_id, description)
 
     for question in questions:
@@ -185,10 +180,10 @@ def create_test(test_info_path: str, course_id: int, order_in_course: int):
             post_test_question_option(option)
 
 
-
 @app.post("/CreateNewTest")
 async def create_new_test(test_create_dto: TestCreateDTO):
-    create_test(test_create_dto.testInfoPath, test_create_dto.courseId, test_create_dto.orderInCourse)
+    create_test(test_create_dto.testInfoPath,
+                test_create_dto.courseId, test_create_dto.orderInCourse)
 
 
 if __name__ == "__main__":

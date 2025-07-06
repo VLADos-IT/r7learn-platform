@@ -90,12 +90,12 @@ async def create_exercise_info(
 ):
     docx_dir = "/resources/temp_exercise_desc"
     os.makedirs(docx_dir, exist_ok=True)
-    temp_path = os.path.join(docx_dir, descDocx.filename)
+    temp_path = os.path.join(docx_dir, name + "_temp.docx")
     with open(temp_path, "wb") as f:
         f.write(await descDocx.read())
     unit_dir = os.path.join(exercise_desc_dir, name)
-    os.makedirs(unit_dir, exist_ok=True)
-    docx_to_md_converter.convert(unit_dir, imgs_src_base, temp_path, True)
+    docx_to_md_converter.convert(
+        unit_dir, imgs_src_base, temp_path, True)
     mds_dir = os.path.join(unit_dir, "mds")
     return {"status": "ok", "mdsDir": mds_dir}
 

@@ -30,9 +30,8 @@ export function loadPage(index) {
 		showSplashScreen();
 		setCurrentIndex(index);
 		const courseId = getCourseIdFromURL();
-		const userId = getUserId();
-		if (courseId && userId) {
-			localStorage.setItem(`currentUnit_${courseId}_${userId}`, index);
+		if (courseId) {
+			localStorage.setItem(`currentUnit_${courseId}`, index);
 		}
 		const unit = courseUnits[index];
 		const container = document.getElementById("markdown-content");
@@ -131,19 +130,14 @@ export async function loadCourseUnits(courseId) {
 	courseUnits = await getCourseUnits(courseId);
 }
 
-export async function loadProgress(courseId, userId) {
-	if (!userId) {
-		progressList = [];
-		return;
-	}
-	progressList = await getCourseProgress(courseId, userId);
-
+export async function loadProgress(courseId) {
+	progressList = await getCourseProgress(courseId);
 	userMdProgress = {};
 	progressList.forEach(p => {
 		userMdProgress[p.courseUnitId] = Math.max(0, (p.degree || 1) - 1);
 	});
 	try {
-		const saved = localStorage.getItem(`mdProgress_${courseId}_${userId}`);
+		const saved = localStorage.getItem(`mdProgress_${courseId}`);
 		if (saved) Object.assign(userMdProgress, JSON.parse(saved));
 	} catch (err) {
 		console.error('Ошибка восстановления локального прогресса:', err);
@@ -151,23 +145,15 @@ export async function loadProgress(courseId, userId) {
 }
 
 export async function updateProgress(unitId, mdIndex) {
-	const userId = getUserId();
-	if (!userId) return;
 	userMdProgress[unitId] = mdIndex;
-	localStorage.setItem(`mdProgress_${getCourseIdFromURL()}_${userId}`, JSON.stringify(userMdProgress));
 	await updateCourseProgress({
-		userId: userId,
 		courseUnitId: unitId,
 		degree: mdIndex + 1
 	});
 }
 
 export function parseMdPathFromName(name) {
-	return `/resources/${encodeURIComponent(name)}/mds/`;
-}
-
-export function getUserId() {
-	return localStorage.getItem('userId');
+	return `/api/resource/${encodeURIComponent(name)}/mds/`;
 }
 
 export function getCourseIdFromURL() {

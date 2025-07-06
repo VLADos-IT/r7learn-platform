@@ -94,7 +94,6 @@ function renderTest(test, container) {
 				try {
 					const res = await sendTestAnswers({
 						testId: test.id,
-						userId: userId,
 						questionsAnswers: answers
 					});
 					showAlert(`Ваш результат: ${res}`, 'success');

@@ -20,9 +20,11 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd /opt/R7L-full
-            git pull
+            branch=$(git rev-parse --abbrev-ref HEAD)
+            git fetch origin
+            git reset --hard origin/$branch
             if [ ! -f .env ]; then bash scripts/gen_env.sh; fi
+            bash scripts/gen_build_version.sh
             docker compose down --remove-orphans
-            docker compose build --no-cache r7l-frontend
-            docker compose build --parallel $(docker compose config --services | grep -v r7l-frontend)
+            docker compose build
             docker compose up -d

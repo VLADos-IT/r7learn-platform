@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using R7L.DTO.Test;
 using R7L.Services.Test;
@@ -11,12 +12,10 @@ public class TestController : Controller
 {
     private readonly ITestService _service;
 
-
     public TestController(ITestService courseUnitService)
     {
         _service = courseUnitService;
     }
-
 
     [HttpGet("{courseUnitId:int}")]
     public async Task<ActionResult<TestReadDTO>> GetTestByCourseUnitId(int courseUnitId)
@@ -165,11 +164,18 @@ public class TestController : Controller
         return NoContent();
     }
 
+    [Authorize]
     [HttpPut("Answer/Update")]
     public async Task<ActionResult<int>> UpdateUserTestAnswer([FromBody] TestAnswerDTO answerDTO)
     {
-        int userTestDegree;
+        var userIdStr = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
 
+        answerDTO.UserId = userId;
+
+        int userTestDegree;
         try
         {
             userTestDegree = await _service.CreateOrChangeTestAnswer(answerDTO);

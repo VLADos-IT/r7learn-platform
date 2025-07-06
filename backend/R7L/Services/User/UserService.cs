@@ -4,6 +4,10 @@ using R7L.Erorrs;
 using System.Security.Cryptography;
 using Konscious.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
 namespace R7L.Services.User;
 
@@ -11,11 +15,14 @@ public class UserService : IUserService
 {
     private readonly int _saltLength;
     private readonly AppDbContext _context;
+    private readonly string _jwtSecret;
 
 
-    public UserService(AppDbContext context)
+    public UserService(AppDbContext context, IConfiguration configuration)
     {
         _context = context;
+        _jwtSecret = configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET is not set!");
+        _saltLength = 16;
     }
 
 
@@ -31,7 +38,7 @@ public class UserService : IUserService
 
     public async Task<Models.User> CreateUser(UserCreateDTO createDTO)
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var registrationDate = new DateOnly(now.Year, now.Month, now.Day);
         int positionId = 2;
 
@@ -50,7 +57,11 @@ public class UserService : IUserService
 
         await ChangeUserPassword(newUser.Id, createDTO.Password);
 
-        return newUser;
+        var userWithPosition = await _context.Users
+            .Include(u => u.Position)
+            .FirstOrDefaultAsync(u => u.Id == newUser.Id);
+
+        return userWithPosition!;
     }
 
     public async Task<Models.User?> AuthenticateUser(UserAuthenticateDTO authenticateDTO)
@@ -58,7 +69,9 @@ public class UserService : IUserService
         string login = authenticateDTO.Login;
         string password = authenticateDTO.Password;
 
-        Models.User? user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
+        Models.User? user = await _context.Users
+            .Include(u => u.Position)
+            .FirstOrDefaultAsync(u => u.Login == login);
 
         if (user is null || !(await IsPasswordCorrect(user.Id, password)))
             return null;
@@ -163,5 +176,25 @@ public class UserService : IUserService
 
             return salt;
         }
+    }
+
+    public string GenerateJwtToken(Models.User user)
+    {
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Name, user.Login),
+            new Claim(ClaimTypes.Role, user.Position.Name)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(7),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

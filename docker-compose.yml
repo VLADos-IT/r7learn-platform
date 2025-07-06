@@ -40,12 +40,16 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Server=r7l-postgres;Port=5432;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Database=${POSTGRES_DB}"
-    ports:
-      - "5000:5000"
+      JWT_SECRET: ${JWT_SECRET}
+    user: "101:101"
     volumes:
       - ./resources:/resources
+      - ./backend/DataProtection-Keys:/home/appuser/.aspnet/DataProtection-Keys
+    ports:
+      - "8082:5000"
     networks:
       - r7l-network
+      - monitoring-net
 
   r7l-frontend:
     build:
@@ -56,26 +60,24 @@ services:
       - r7l-backend
     environment:
       BACKEND_URL: "http://r7l-backend:5000/api"
-    ports:
-      - "8081:80"
     volumes:
-      - ./frontend/r7l:/static/r7learn
-      - ./resources:/static/resources
+      - ./frontend/r7l:/usr/share/nginx/html/r7l
+      - ./resources:/usr/share/nginx/html/resources
     networks:
       - r7l-network
+      - monitoring-net
 
   r7l-admin-panel:
     build:
       context: ./admin_panel
       dockerfile: Dockerfile
     container_name: r7l-admin-panel
-    ports:
-      - "8083:80"
     volumes:
-      - ./admin_panel/admin_r7l:/static/admin_r7learn
-      - ./resources:/static/resources
+      - ./admin_panel/admin_r7l:/usr/share/nginx/html/admin_r7learn
+      - ./resources:/usr/share/nginx/html/resources
     networks:
       - r7l-network
+      - monitoring-net
 
   r7l-converter:
     build:
@@ -85,9 +87,10 @@ services:
       - ./resources:/resources
     networks:
       - r7l-network
-    ports:
-      - "8000:8000"
+      - monitoring-net
     user: "101:101"
+    ports:
+      - "8001:8001"
 
   r7l-testcreator:
     build:
@@ -97,8 +100,7 @@ services:
       - ./resources:/resources
     networks:
       - r7l-network
-    ports:
-      - "8001:8000"
+      - monitoring-net
     user: "101:101"
 
   r7l-exercisecheck:
@@ -109,9 +111,10 @@ services:
       - ./resources:/resources
     networks:
       - r7l-network
-    ports:
-      - "8002:8000"
+      - monitoring-net
     user: "101:101"
+    ports:
+      - "8002:8001"
 
   r7l-nginx:
     image: nginx:alpine
@@ -127,12 +130,13 @@ services:
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd
       - ./nginx/r7learn.xorg.su.conf:/etc/nginx/conf.d/r7learn.xorg.su.conf
       - ./nginx/admin.r7learn.xorg.su.conf:/etc/nginx/conf.d/admin.r7learn.xorg.su.conf
-      - ./frontend/r7l:/usr/share/nginx/html/r7learn
+      - ./frontend/r7l:/usr/share/nginx/html/r7l
       - ./admin_panel/admin_r7l:/usr/share/nginx/html/admin_r7learn
       - ./resources:/usr/share/nginx/html/resources
     ports:
-      - "8082:80"
-      - "8443:443"
+      - "8081:80"
+      - "8083:80"
+      - "8090:80"
     networks:
       - r7l-network
 
@@ -153,6 +157,9 @@ volumes:
   r7l_postgres_data:
   r7l_postgres_replica_data:
 
+
 networks:
   r7l-network:
-    driver: bridge
+    external: true
+  monitoring-net:
+    external: true

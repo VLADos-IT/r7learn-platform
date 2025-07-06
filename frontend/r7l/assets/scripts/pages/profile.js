@@ -16,24 +16,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	renderTemplate('profile-skeleton', container);
 
-	if (!userId) {
+	const token = localStorage.getItem('jwt');
+	if (!token) {
 		renderTemplate('profile-not-authorized', container);
 		hideSplashOnImagesLoad();
 		return;
 	}
-
-	let userData;
-	try {
-		userData = await userGet(userId);
-		if (!userData || userData.error) {
-			localStorage.removeItem('userId');
-			renderTemplate('profile-not-authorized', container);
-			hideSplashOnImagesLoad();
-			return;
-		}
-	} catch (err) {
-		renderTemplate('profile-load-error', container);
-		document.getElementById('reload-btn').onclick = () => location.reload();
+	let userData = await userGet();
+	if (!userData || userData.error) {
+		renderTemplate('profile-not-authorized', container);
 		hideSplashOnImagesLoad();
 		return;
 	}

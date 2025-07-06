@@ -19,4 +19,6 @@ public interface IUserService
     Task<bool> IsLoginUnique(string login);
 
     Task<bool> IsEmailUnique(string email);
+
+    string GenerateJwtToken(Models.User user);
 }

@@ -11,4 +11,4 @@ RUN mkdir -p /resources && chown -R nginx:nginx /app /resources
 
 USER nginx
 
-CMD ["python", "test_creator.py"]
+CMD ["uvicorn", "test_creator:app", "--host", "0.0.0.0", "--port", "8001"]

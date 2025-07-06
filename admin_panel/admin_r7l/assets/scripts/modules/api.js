@@ -1,10 +1,19 @@
 const API_BASE = 'https://r7learn.xorg.su/api';
 
+function getCookie(name) {
+	const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+	return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
 export async function sendRequest(method, endpoint, body) {
+	const token = getCookie('jwt');
+	const headers = { 'Content-Type': 'application/json' };
+	if (token) headers['Authorization'] = `Bearer ${token}`;
 	const res = await fetch(`${API_BASE}${endpoint}`, {
 		method,
-		headers: { 'Content-Type': 'application/json' },
-		body: body ? JSON.stringify(body) : undefined
+		headers,
+		body: body ? JSON.stringify(body) : undefined,
+		credentials: 'include'
 	});
 	if (!res.ok) throw new Error(await res.text());
 	return res.status === 204 ? null : res.json();

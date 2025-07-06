@@ -39,25 +39,15 @@ export function setupProfileForm(userData) {
 		}
 
 		const payload = {
-			id: userData.id,
 			login: form.login.value,
 			email: form.email.value,
 			firstName: form.firstName.value,
 			lastName: form.lastName.value,
 		};
 		try {
-			const updated = await userUpdate(payload);
-			if (updated === undefined || updated === null) {
-				showAlert('Данные успешно обновлены!', 'success');
-				setTimeout(() => location.reload(), 1000);
-			} else if (typeof updated === 'object' && !updated.error) {
-				showAlert('Данные успешно обновлены!', 'success');
-				setTimeout(() => location.reload(), 1000);
-			} else if (updated && updated.error) {
-				showAlert('Ошибка: ' + (updated.error || 'Не удалось обновить профиль'));
-			} else {
-				showAlert('Неизвестный ответ сервера.');
-			}
+			await userUpdate(payload);
+			showAlert('Данные успешно обновлены!', 'success');
+			setTimeout(() => location.reload(), 1000);
 		} catch (err) {
 			showAlert('Ошибка при обновлении профиля: ' + (err.message || 'Попробуйте позже'));
 		} finally {
@@ -94,8 +84,12 @@ export function setupPasswordForm(userData) {
 			return;
 		}
 
+		const payload = {
+			oldPassword: form.oldPassword.value,
+			newPassword: form.newPassword.value
+		};
 		try {
-			await userChangePassword(userData.id, { oldPassword, newPassword });
+			await userChangePassword({ oldPassword, newPassword });
 			showAlert('Пароль успешно изменён!', 'success');
 			form.reset();
 		} catch (err) {
@@ -116,8 +110,9 @@ export function setupLogout() {
 	const btn = document.getElementById('logout-btn');
 	if (btn) {
 		btn.addEventListener('click', () => {
-			localStorage.removeItem('userId');
+			localStorage.removeItem('jwt');
 			localStorage.removeItem('login');
+			localStorage.removeItem('userId');
 			localStorage.removeItem('userRole');
 			window.location.href = 'auth.html';
 		});

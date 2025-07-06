@@ -11,7 +11,10 @@
 </template>
 
 <template id="exercise-load-error">
-	<p>Ошибка загрузки задания: {{error}}</p>
+	<div class="exercise-error-block">
+		<p style="color: #e74c3c; font-weight: bold;">{{error}}</p>
+		<p style="font-size: 0.95em; color: #555;">Попробуйте обновить страницу.</p>
+	</div>
 </template>
 
 <template id="exercise-desc">

@@ -1,0 +1,38 @@
+groups:
+  - name: container-health
+    rules:
+      - alert: ContainerDown
+        expr: absent(container_last_seen{container_label_com_docker_compose_service=~"r7l-(backend|frontend|admin-panel|converter|testcreator|exercisecheck)"}) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер {{ $labels.container_label_com_docker_compose_service }} (docker-compose) не работает"
+          description: "Контейнер {{ $labels.container_label_com_docker_compose_service }} из docker-compose не отвечает более 1 минуты."
+
+      - alert: BackendDotnetProcessDown
+        expr: absent(process_start_time_seconds{job="node-exporter",name="dotnet"}) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Процесс dotnet в r7l-backend не работает"
+          description: "Нет метрик процесса dotnet от node-exporter для r7l-backend более 1 минуты."
+
+      - alert: InternalNginxContainerDown
+        expr: absent(container_last_seen{container_label_com_docker_compose_service="r7l-nginx"}) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Внутренний контейнер nginx (r7l-nginx) не работает"
+          description: "Контейнер r7l-nginx не отвечает более 1 минуты."
+
+      - alert: ExternalNginxContainerDown
+        expr: absent(process_start_time_seconds{job="node-exporter",name="nginx"}) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Внешний сервис nginx (nginx.service) не работает"
+          description: "Процесс nginx (systemd nginx.service) не отвечает более 1 минуты."

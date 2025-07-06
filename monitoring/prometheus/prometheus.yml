@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['r7l-prometheus:9090']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['r7l-postgres-exporter:9187']
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['r7l-loki:3100']
+
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['r7l-alertmanager:9093']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['r7l-alertmanager:9093']
+
+rule_files:
+  - 'prometheus/alert.rules.yml'

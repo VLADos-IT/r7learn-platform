@@ -87,12 +87,12 @@ def convert(root_result_dir: str, imgs_src_base: str, docx_path: str, lesson_on_
     docx_name = docx_path.split(path_separator)[-1].split('.')[0]
     if lesson_on_create:
         docx_name = docx_name.replace(' ', '_')
-    result_dir = root_result_dir + '/' + docx_name
-    os.makedirs(result_dir, exist_ok=False)
-    mds_dir = result_dir + '/mds'
-    os.makedirs(mds_dir, exist_ok=False)
-    imgs_dir = result_dir + '/imgs'
-    os.makedirs(imgs_dir, exist_ok=False)
+    result_dir = os.path.join(root_result_dir, docx_name)
+    os.makedirs(result_dir, exist_ok=True)
+    mds_dir = os.path.join(result_dir, 'mds')
+    imgs_dir = os.path.join(result_dir, 'imgs')
+    os.makedirs(mds_dir, exist_ok=True)
+    os.makedirs(imgs_dir, exist_ok=True)
     mds_count = convert_docx_to_md(
         docx_path, mds_dir, imgs_dir, imgs_src_base + '/' + docx_name)
     return docx_name, mds_count

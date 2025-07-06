@@ -56,7 +56,6 @@
 	width: 100vw;
 	background-color: var(--background-color);
 	padding: calc(var(--header-height) + 2rem) 0 calc(var(--footer-height) + 2rem) 0;
-	/* исправлено */
 	box-sizing: border-box;
 }
 

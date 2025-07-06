@@ -14,16 +14,24 @@ export async function initUnitHandlers() {
 		}
 
 		const formData = new FormData();
-		formData.append('docx', fileInput.files[0]);
+		formData.append('file', fileInput.files[0]);
+		const fileName = fileInput.files[0].name;
+		const folderName = fileName.replace(/\.[^.]+$/, '');
+		formData.append('name', folderName);
+		formData.append('subdir', 'docx');
 		formData.append('courseId', courseId);
 		formData.append('orderInCourse', orderInCourse);
-
-		const convRes = await fetch('/converter/convertDocx', {
+		let headers = {};
+		const token = document.cookie.match(/(?:^|; )jwt=([^;]*)/);
+		if (token) headers['Authorization'] = `Bearer ${decodeURIComponent(token[1])}`;
+		const convRes = await fetch('/api/resource/upload', {
 			method: 'POST',
-			body: formData
+			body: formData,
+			headers,
+			credentials: 'include'
 		});
 		if (!convRes.ok) {
-			alert('Ошибка конвертации: ' + await convRes.text());
+			alert('Ошибка загрузки: ' + await convRes.text());
 			return;
 		}
 		alert('Юнит успешно добавлен!');

@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import requests
 from fastapi import FastAPI, Body
 from pydantic import BaseModel
@@ -91,6 +92,8 @@ def update_course_progress(user_id: int, course_unit_id: int, degree: int):
 
 
 def check_exercise(course_unit_id: int, user_id: int, user_solution_path: str):
+    import logging
+    logger = logging.getLogger("exercisecheck")
     solution_file_extension = user_solution_path.split('.')[-1]
     expected_solution_path = (
         exercises_dir_path + path_separator
@@ -98,11 +101,27 @@ def check_exercise(course_unit_id: int, user_id: int, user_solution_path: str):
         + exercise_expected_solution_name + '.' + solution_file_extension
     )
 
-    user_solution_differrences = docx_comparer.compare_docx(
-        expected_solution_path, user_solution_path)
-    degree = int(len(user_solution_differrences) == 0)
+    if not os.path.isfile(user_solution_path):
+        logger.error(f"User solution file not found: {user_solution_path}")
+        return [f"Файл пользователя не найден: {user_solution_path}"], False
 
-    update_course_progress(user_id, course_unit_id, degree)
+    if not os.path.isfile(expected_solution_path):
+        logger.error(
+            f"Expected solution file not found: {expected_solution_path}")
+        return [f"Эталонный файл не найден: {expected_solution_path}"], False
+
+    try:
+        user_solution_differrences = docx_comparer.compare_docx(
+            expected_solution_path, user_solution_path)
+    except Exception as e:
+        logger.exception(f"Ошибка сравнения файлов: {e}")
+        return [f"Ошибка сравнения файлов: {e}"], False
+
+    degree = int(len(user_solution_differrences) == 0)
+    try:
+        update_course_progress(user_id, course_unit_id, degree)
+    except Exception as e:
+        logger.exception(f"Ошибка обновления прогресса: {e}")
     return user_solution_differrences, degree == 1
 
 
@@ -113,6 +132,10 @@ async def check_user_exrcise(exercise_check_dto: ExerciseCheckDTO):
         user_id=exercise_check_dto.userId,
         user_solution_path=exercise_check_dto.userSolutionPath
     )
+    if not result:
+        if differences and any("не найден" in str(d) or "Ошибка" in str(d) for d in differences):
+            raise HTTPException(status_code=400, detail={
+                                "result": False, "differences": differences})
     return {
         "result": result,
         "differences": differences

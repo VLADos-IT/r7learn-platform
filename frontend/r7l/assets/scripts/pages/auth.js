@@ -29,10 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 			};
 			try {
 				const user = await userAuth(payload);
-				if (user && user.id) {
-					localStorage.setItem('userId', user.id);
+				if (user && user.token) {
+					localStorage.setItem('jwt', user.token);
 					localStorage.setItem('login', user.login);
+					localStorage.setItem('userId', user.id);
 					localStorage.setItem('userRole', user.positionName);
+					document.cookie = `jwt=${user.token}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
+					document.cookie = `userRole=${user.positionName}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
 					showAlert('Вход выполнен!', 'success');
 					setTimeout(() => {
 						window.location.href = user.positionName === 'admin'
@@ -104,10 +107,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 				}
 				const data = await userCreate(payload);
 				if (data && data.id) {
-					showAlert('Регистрация успешна!', 'success');
-					localStorage.setItem('userId', data.id);
+					localStorage.setItem('jwt', data.token);
 					localStorage.setItem('login', data.login);
+					localStorage.setItem('userId', data.id);
 					localStorage.setItem('userRole', data.positionName);
+					document.cookie = `jwt=${data.token}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
+					document.cookie = `userRole=${data.positionName}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
+					showAlert('Регистрация успешна!', 'success');
 					setTimeout(() => {
 						window.location.href = data.positionName === 'admin'
 							? 'https://admin.r7learn.xorg.su'

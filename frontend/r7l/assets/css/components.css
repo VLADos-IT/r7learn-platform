@@ -248,5 +248,4 @@ button:disabled .btn-icon {
 
 .nav-btn-hidden {
 	visibility: hidden;
-	/* или opacity: 0; */
 }

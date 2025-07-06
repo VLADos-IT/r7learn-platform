@@ -1,5 +1,31 @@
 import { renderUnits, fillTestCourseSelect, fillExerciseCourseSelect } from '../modules/ui.js';
 
+function getCookie(name) {
+	const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+	return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+async function uploadExerciseFile(file, courseId, orderInCourse, name) {
+	const formData = new FormData();
+	formData.append('file', file);
+	formData.append('subdir', 'exercises');
+	formData.append('courseId', courseId);
+	formData.append('orderInCourse', orderInCourse);
+	let safeName = name && name.trim() ? name.trim() : file.name.replace(/\.[^.]+$/, '');
+	formData.append('name', safeName);
+	let headers = {};
+	const token = getCookie('jwt');
+	if (token) headers['Authorization'] = `Bearer ${token}`;
+	const res = await fetch('/api/resource/upload', {
+		method: 'POST',
+		body: formData,
+		headers,
+		credentials: 'include'
+	});
+	if (!res.ok) throw new Error('Ошибка загрузки файла: ' + (await res.text()));
+	return await res.json();
+}
+
 export async function initExerciseHandlers() {
 	document.getElementById('upload-exercise-form').addEventListener('submit', async e => {
 		e.preventDefault();
@@ -17,47 +43,35 @@ export async function initExerciseHandlers() {
 			return;
 		}
 
-		// 1. Загружаем эталон
 		const file = fileInput.files[0];
-		const filename = `exercise_${Date.now()}.docx`;
-		const uploadRes = await fetch('/resources/temp_exercise/' + filename, {
-			method: 'PUT',
-			body: file
-		});
-		if (!uploadRes.ok) {
-			status.textContent = 'Ошибка загрузки файла на сервер';
+		try {
+			await uploadExerciseFile(file, courseId, orderInCourse, name);
+		} catch (err) {
+			status.textContent = 'Ошибка: ' + err.message;
 			return;
 		}
 
-		// 2. Создаём задание
-		const body = {
-			courseId: Number(courseId),
-			orderInCourse: Number(orderInCourse),
-			name,
-			expectedSolutionPath: `/resources/temp_exercise/${filename}`
-		};
-		const res = await fetch("/exercisecheck/CreateNewExercise", {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(body)
-		});
-		if (!res.ok) {
-			status.textContent = 'Ошибка: ' + await res.text();
-			return;
-		}
-
-		// 3. Загружаем описание (docx) через конвертер
 		if (descInput && descInput.files.length) {
 			const descFile = descInput.files[0];
 			const descFormData = new FormData();
-			descFormData.append('descDocx', descFile);
-			descFormData.append('name', name);
-			const convRes = await fetch('/converter/CreateExerciseInfo', {
-				method: 'POST',
-				body: descFormData
-			});
-			if (!convRes.ok) {
-				status.textContent = 'Ошибка загрузки описания: ' + await convRes.text();
+			descFormData.append('file', descFile);
+			descFormData.append('subdir', 'exercise_desc');
+			descFormData.append('courseId', courseId);
+			descFormData.append('orderInCourse', orderInCourse);
+			let safeName = name && name.trim() ? name.trim() : descFile.name.replace(/\.[^.]+$/, '');
+			descFormData.append('name', safeName);
+			let headers = {};
+			const token = getCookie('jwt');
+			if (token) headers['Authorization'] = `Bearer ${token}`;
+			try {
+				await fetch('/api/resource/upload', {
+					method: 'POST',
+					body: descFormData,
+					headers,
+					credentials: 'include'
+				});
+			} catch (err) {
+				status.textContent = 'Ошибка загрузки описания: ' + err.message;
 				return;
 			}
 		}

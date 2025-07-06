@@ -6,11 +6,13 @@ import {
 import { updateNavButtons } from './nav.js';
 
 export async function fetchMdFiles(mdPath) {
-	const unitName = decodeURIComponent(mdPath.split('/')[2]);
-	const resp = await fetch(`/api/mdfiles?unit=${encodeURIComponent(unitName)}`);
+	const unit = decodeURIComponent(mdPath.split('/')[3]);
+	const token = localStorage.getItem('jwt');
+	const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+	const resp = await fetch(`/api/resource/list/${unit}/mds`, { headers, credentials: 'include' });
 	if (!resp.ok) return [];
 	const files = await resp.json();
-	const base = mdPath.substring(0, mdPath.lastIndexOf('/'));
+	const base = mdPath.endsWith('/') ? mdPath.slice(0, -1) : mdPath;
 	return files.map(f => `${base}/${f}`);
 }
 
@@ -32,7 +34,9 @@ export async function loadMdFile(mdPath, mdIndex = 0, unitId = null) {
 		return;
 	}
 	const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-	const md = await fetch(mdFiles[getCurrentMdIndex()]).then(resp => resp.text());
+	const token = localStorage.getItem('jwt');
+	const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+	const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
 	renderMarkdown(md, container, mdBasePath, mdFileName);
 
 	updatePageIndicator(container);

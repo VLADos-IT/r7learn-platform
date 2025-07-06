@@ -5,10 +5,18 @@ using R7L.Services.Course;
 using R7L.Services.CourseUnit;
 using R7L.Services.CourseProgress;
 using R7L.Services.Test;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using R7L.Services.Resource;
+using System.Net.Http;
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient<ResourceProcessingService>();
+builder.Services.AddScoped<ResourceProcessingService>();
 
-// Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseLazyLoadingProxies().UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -18,41 +26,35 @@ builder.Services.AddScoped<ICourseUnitService, CourseUnitService>();
 builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();
 builder.Services.AddScoped<ITestService, TestService>();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options =>
+var jwtSecret = builder.Configuration["JWT_SECRET"];
+builder.Services.AddAuthentication(options =>
 {
-    options.AddPolicy("AllowFrontendAndAdmin", policy =>
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        policy.WithOrigins(
-            "https://r7learn.xorg.su",
-            "https://admin.r7learn.xorg.su"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-    });
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ClockSkew = TimeSpan.FromMinutes(2),
+        RoleClaimType = ClaimTypes.Role
+    };
 });
+
+builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-//SERVER
-/*app.UseHttpsRedirection();
 
-SERVER => DELETE LINE:
+app.UseAuthentication();
 app.UseAuthorization();
-*/
-
-app.UseCors("AllowFrontendAndAdmin");
-
 
 app.MapControllers();
 

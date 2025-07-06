@@ -1,88 +1,92 @@
 #!/bin/bash
 set -e
 
-REPO_URL="https://github.com/VLADos-IT/R7L_full.git"
-INSTALL_DIR="/opt/R7L_full"
-ENV_FILE=".env"
-ENV_EXAMPLE=".env.example"
-POSTGRES_USER="r7l_admin"
-POSTGRES_DB="r7l"
+## Configuration variables
+INSTALL_DIR="/opt/R7L-full"
+MONITOR_DIR="/opt/R7L-monitor"
+NGINX_CONF_SRC="$INSTALL_DIR/EXTERNAL_nginx_configurations"
+NGINX_CONF_DST="/etc/nginx/sites-available"
+NGINX_ENABLED="/etc/nginx/sites-enabled"
+HTPASSWD_SRC="$INSTALL_DIR/nginx/.htpasswd"
+HTPASSWD_DST="/etc/nginx/.htpasswd"
+# Replace with your actual email for certbot notifications
+EMAIL="your-email@example.com"
 
-generate_password() {
-    tr -dc 'A-Za-z0-9!@#$%^&*()_+=' </dev/urandom | head -c 24
-}
+CRON_JOB="0 */3 * * * $INSTALL_DIR/scripts/backup.sh"
+NETWORK_NAME="monitoring-net"
 
-cleanup_old_install() {
-    echo "==> Cleaning up old Docker containers, volumes, and networks..."
-    docker compose down -v --remove-orphans || true
-    docker system prune -af || true
-    docker volume prune -f || true
-}
-echo "==> Cleaning up previous installation leftovers..."
-if [ -d "$INSTALL_DIR" ]; then
-    cd "$INSTALL_DIR"
-    cleanup_old_install
-    cd /
-    rm -rf "$INSTALL_DIR"
-fi
+echo "==> Checking and creating docker network $NETWORK_NAME..."
+docker network inspect $NETWORK_NAME >/dev/null 2>&1 || docker network create $NETWORK_NAME
+docker network inspect r7l-network >/dev/null 2>&1 || docker network create r7l-network
 
-echo "==> Cloning repository..."
-git clone "$REPO_URL" "$INSTALL_DIR"
-
+echo "==> Building and starting main services..."
 cd "$INSTALL_DIR"
-
-echo "==> Creating .env from template..."
-if [ ! -f "$ENV_FILE" ]; then
-    cp "$ENV_EXAMPLE" "$ENV_FILE"
-    POSTGRES_PASSWORD=$(generate_password)
-    sed -i "s|POSTGRES_USER=.*|POSTGRES_USER=${POSTGRES_USER}|" "$ENV_FILE"
-    sed -i "s|POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${POSTGRES_PASSWORD}|" "$ENV_FILE"
-    sed -i "s|POSTGRES_DB=.*|POSTGRES_DB=${POSTGRES_DB}|" "$ENV_FILE"
-    echo "Generated .env with random password for PostgreSQL."
-    echo "POSTGRES_USER=${POSTGRES_USER}"
-    echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
-    echo "POSTGRES_DB=${POSTGRES_DB}"
-else
-    echo ".env already exists. Please check its contents."
-fi
-
-echo "==> Installing Docker and Docker Compose if needed..."
-if ! command -v docker &>/dev/null; then
-    curl -fsSL https://get.docker.com | sh
-    systemctl enable --now docker
-fi
-if ! command -v docker-compose &>/dev/null; then
-    DOCKER_COMPOSE_VERSION="2.29.2"
-    curl -SL "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-fi
-
-echo "==> Building and starting all services..."
 docker compose build
+chown -R 1000:1000 "$INSTALL_DIR/backend/DataProtection-Keys" || true
+chown -R 101:101 "$INSTALL_DIR/resources" || true
 docker compose up -d
 
-echo "==> Copying nginx configs and .htpasswd..."
-cp EXTERNAL_nginx_configurations/r7learn.xorg.su.conf /etc/nginx/sites-available/
-ln -sf /etc/nginx/sites-available/r7learn.xorg.su.conf /etc/nginx/sites-enabled/
-cp EXTERNAL_nginx_configurations/admin.r7learn.xorg.su.conf /etc/nginx/sites-available/
-ln -sf /etc/nginx/sites-available/admin.r7learn.xorg.su.conf /etc/nginx/sites-enabled/
-cp nginx/.htpasswd /etc/nginx/
+echo "==> Copying nginx configs for main and admin..."
 
-echo "==> Restarting nginx..."
-systemctl restart nginx
+rm -f "$NGINX_ENABLED/r7learn.xorg.su.conf"
+rm -f "$NGINX_ENABLED/admin.r7learn.xorg.su.conf"
+rm -f "$NGINX_ENABLED/monitor.r7learn.xorg.su.conf"
+rm -f "$NGINX_CONF_DST/r7learn.xorg.su.conf"
+rm -f "$NGINX_CONF_DST/admin.r7learn.xorg.su.conf"
+rm -f "$NGINX_CONF_DST/monitor.r7learn.xorg.su.conf"
 
-echo "==> Fixing permissions for resources folder..."
-chown -R 101:101 ./resources || true
+cp "$NGINX_CONF_SRC/r7learn.xorg.su.conf" "$NGINX_CONF_DST/"
+cp "$NGINX_CONF_SRC/admin.r7learn.xorg.su.conf" "$NGINX_CONF_DST/"
+cp "$NGINX_CONF_SRC/monitor.r7learn.xorg.su.conf" "$NGINX_CONF_DST/"
 
-echo "==> (Optional) Obtaining Let's Encrypt SSL certificates..."
-if command -v certbot &>/dev/null; then
-    certbot --nginx -d r7learn.xorg.su -d admin.r7learn.xorg.su || true
-    systemctl restart nginx
+ln -sf "$NGINX_CONF_DST/r7learn.xorg.su.conf" "$NGINX_ENABLED/r7learn.xorg.su.conf"
+ln -sf "$NGINX_CONF_DST/admin.r7learn.xorg.su.conf" "$NGINX_ENABLED/admin.r7learn.xorg.su.conf"
+ln -sf "$NGINX_CONF_DST/monitor.r7learn.xorg.su.conf" "$NGINX_ENABLED/monitor.r7learn.xorg.su.conf"
+
+cp "$HTPASSWD_SRC" "$HTPASSWD_DST"
+
+echo "==> Setting up monitoring..."
+
+MONITOR_DIR="/opt/R7L-monitor"
+INSTALL_DIR="$(pwd)"
+
+if [ -d "$MONITOR_DIR" ]; then
+    rm -rf "$MONITOR_DIR"
+fi
+mkdir -p "$MONITOR_DIR"
+cp -r "$INSTALL_DIR/monitoring/"* "$MONITOR_DIR/"
+if [ -f "$INSTALL_DIR/.env" ]; then
+    echo "==> Copying .env to $MONITOR_DIR/.env (for monitoring exporters)..."
+    awk 'BEGIN{FS=OFS="="} /^\s*#/ {print $0; next} NF==2 {gsub(/%/, "%25", $2); gsub(/:/, "%3A", $2); gsub(/@/, "%40", $2); gsub(/\//, "%2F", $2); gsub(/\?/, "%3F", $2); gsub(/&/, "%26", $2); print $1, $2; next} {print $0}' "$INSTALL_DIR/.env" > "$MONITOR_DIR/.env"
 else
-    echo "Certbot is not installed. Install it for SSL: apt install certbot python3-certbot-nginx"
+    echo "==> WARNING: .env file not found in $INSTALL_DIR, monitoring exporters may not work!"
 fi
 
-echo "==> Checking service status..."
-docker compose ps
-echo "==> Installation complete!"
-echo "Check availability: https://r7learn.xorg.su and https://admin.r7learn.xorg.su"
+if [ ! -d "$MONITOR_DIR/loki-wal" ]; then
+    mkdir -p "$MONITOR_DIR/loki-wal"
+fi
+chown -R 10001:10001 "$MONITOR_DIR/loki-wal"
+
+if [ ! -d "$MONITOR_DIR/grafana/provisioning/dashboards" ]; then
+    mkdir -p "$MONITOR_DIR/grafana/provisioning/dashboards"
+fi
+
+cd "$MONITOR_DIR"
+chown -R 472:472 ./grafana/data || true
+docker compose -f docker-compose.monitoring.yml up -d
+
+echo "==> Reloading nginx..."
+systemctl reload nginx
+
+echo "==> Running certbot for SSL certificates..."
+certbot --nginx -d r7learn.xorg.su --email "$EMAIL"
+certbot --nginx -d admin.r7learn.xorg.su
+certbot --nginx -d monitor.r7learn.xorg.su
+
+echo "==> Reloading nginx..."
+systemctl reload nginx
+
+echo "==> Adding backup job to crontab..."
+( crontab -l 2>/dev/null | grep -v "$INSTALL_DIR/scripts/backup.sh" ; echo "$CRON_JOB" ) | crontab -
+
+echo "==> All services (main, admin, monitoring) started and configured!"

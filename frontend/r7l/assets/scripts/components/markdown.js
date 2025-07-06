@@ -27,13 +27,13 @@ export async function renderMarkdown(md, container, mdBasePath = '', mdFileName 
 		let unitName = '';
 		let isExerciseDesc = false;
 		if (mdBasePath) {
-			let match = mdBasePath.match(/\/resources\/([^/]+)\/mds/);
+			let match = mdBasePath.match(/\/api\/resource\/([^/]+)\/mds/);
 			if (match) {
 				unitName = match[1];
 			}
-			if (mdBasePath.startsWith('/resources/exercise_desc/')) {
+			if (mdBasePath.startsWith('/api/resource/exercise_desc/')) {
 				isExerciseDesc = true;
-				match = mdBasePath.match(/\/resources\/exercise_desc\/([^/]+)\/mds/);
+				match = mdBasePath.match(/\/api\/resource\/exercise_desc\/([^/]+)\/mds/);
 				if (match) unitName = match[1];
 			}
 		}
@@ -44,9 +44,20 @@ export async function renderMarkdown(md, container, mdBasePath = '', mdFileName 
 		if (href.startsWith('../imgs/') && unitName && imgSubfolder) {
 			const imageName = href.split('/').pop();
 			if (isExerciseDesc) {
-				href = `/resources/exercise_desc/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+				href = `/api/resource/public/exercise_desc/${unitName}/imgs/${imgSubfolder}/${imageName}`;
 			} else {
-				href = `/resources/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+				href = `/api/resource/public/${unitName}/imgs/${imgSubfolder}/${imageName}`;
+			}
+		} else if (href.startsWith('imgs/') && unitName) {
+			const parts = href.split('/');
+			if (parts.length === 3) {
+				const subfolder = parts[1];
+				const imageName = parts[2];
+				if (isExerciseDesc) {
+					href = `/api/resource/public/exercise_desc/${unitName}/imgs/${subfolder}/${imageName}`;
+				} else {
+					href = `/api/resource/public/${unitName}/imgs/${subfolder}/${imageName}`;
+				}
 			}
 		}
 		let out = `<img src="${href}" alt="${text || ''}"`;

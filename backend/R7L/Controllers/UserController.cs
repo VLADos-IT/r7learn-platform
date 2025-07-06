@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using R7L.DTO.User;
 using R7L.Models;
 using R7L.Services.User;
+using System.Text;
 
 namespace R7L.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : Controller
+public class UserController : ControllerBase
 {
     private readonly IUserService _service;
 
@@ -18,44 +23,69 @@ public class UserController : Controller
     }
 
 
-    [HttpPost("Create")]
-    public async Task<ActionResult<UserReadDTO>> CreateUser([FromBody] UserCreateDTO createDTO)
-    {
-        bool isLoginUnique = await _service.IsLoginUnique(createDTO.Login);
-        bool isEmailUnique = await _service.IsEmailUnique(createDTO.Email);
-
-        if (!isLoginUnique || !isEmailUnique)
-            return BadRequest("User email or login is not unique");
-
-        User createdUser = await _service.CreateUser(createDTO);
-        var createdUserReadDTO = new UserReadDTO(createdUser);
-
-        return Ok(createdUserReadDTO);
-    }
-
     [HttpPost("Authenticate")]
-    public async Task<ActionResult<UserReadDTO>> AuthenticateUser(
-        [FromBody] UserAuthenticateDTO authenticateDTO)
+    [AllowAnonymous]
+    public async Task<ActionResult<object>> AuthenticateUser([FromBody] UserAuthenticateDTO authenticateDTO)
     {
-        User user = await _service.AuthenticateUser(authenticateDTO);
-
-        if (user is null)
+        var user = await _service.AuthenticateUser(authenticateDTO);
+        if (user == null)
             return Unauthorized();
 
-        var userReadDTO = new UserReadDTO(user);
-        return Ok(userReadDTO);
+        var token = _service.GenerateJwtToken(user);
+
+        return Ok(new
+        {
+            id = user.Id,
+            login = user.Login,
+            positionName = user.Position.Name,
+            email = user.Email,
+            firstName = user.FirstName,
+            lastName = user.LastName,
+            registrationDate = user.RegistrationDate,
+            token = token
+        });
+    }
+
+    [HttpPost("Create")]
+    [AllowAnonymous]
+    public async Task<ActionResult<object>> CreateUser([FromBody] UserCreateDTO createDTO)
+    {
+        var user = await _service.CreateUser(createDTO);
+        if (user == null)
+            return BadRequest("Не удалось создать пользователя");
+
+        var token = _service.GenerateJwtToken(user);
+
+        return Ok(new
+        {
+            id = user.Id,
+            login = user.Login,
+            positionName = user.Position.Name,
+            email = user.Email,
+            firstName = user.FirstName,
+            lastName = user.LastName,
+            registrationDate = user.RegistrationDate,
+            token = token
+        });
     }
 
     [HttpGet("{id:int}")]
+    [Authorize]
     public async Task<ActionResult<UserReadDTO>> GetUser(int id)
     {
-        User user = await _service.GetUserById(id);
+        var userIdStr = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
-        if (user is null)
-            return NotFound();
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
 
-        var userReadDTO = new UserReadDTO(user);
-        return Ok(userReadDTO);
+        if (userRole != "admin" && userId != id)
+            return Forbid();
+
+        var user = await _service.GetUserById(id);
+        if (user == null) return NotFound();
+        return Ok(new UserReadDTO(user));
     }
 
     [HttpPost("CheckLoginAndEmailUniqueness")]
@@ -73,36 +103,56 @@ public class UserController : Controller
     }
 
     [HttpPut("Update")]
-    public async Task<ActionResult> UpdateUser([FromBody] UserUpdateDTO updateDTO)
+    [Authorize]
+    public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO dto)
     {
+        var userIdStr = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
+
+        dto.Id = userId;
+
         try
         {
-            await _service.UpdateUser(updateDTO);
+            await _service.UpdateUser(dto);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { error = ex.Message });
         }
-        
         return NoContent();
     }
 
-    [HttpPatch("ChangePassword/{userId:int}")]
-    public async Task<ActionResult> ChangeUserPassword(int userId,
-        [FromBody] UserChangePasswordDTO changePasswordDTO)
+    [HttpPut("ChangePassword")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordDTO dto)
     {
-        try
-        {
-            if (!(await _service.IsPasswordCorrect(userId, changePasswordDTO.OldPassword)))
-                throw new Exception("old password is incorrect");
+        var userIdStr = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
 
-            await _service.ChangeUserPassword(userId, changePasswordDTO.NewPassword);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        if (!await _service.IsPasswordCorrect(userId, dto.OldPassword))
+            return BadRequest(new { error = "Old password is incorrect" });
 
+        await _service.ChangeUserPassword(userId, dto.NewPassword);
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpGet("CurrentUser")]
+    public async Task<ActionResult<UserReadDTO>> GetCurrentUser()
+    {
+        var userIdStr = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
+
+        var user = await _service.GetUserById(userId);
+        if (user == null)
+            return NotFound();
+
+        return Ok(new UserReadDTO(user));
     }
 }
