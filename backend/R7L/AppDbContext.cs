@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using R7L.Models;
 
 namespace R7L;
@@ -45,7 +43,7 @@ public partial class AppDbContext : DbContext
             optionsBuilder.UseLazyLoadingProxies();
         }
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>(entity =>

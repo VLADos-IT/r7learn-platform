@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using R7L.DTO.Test;
 using R7L.Services.Test;
@@ -148,7 +147,7 @@ public class TestController : Controller
 
         return NoContent();
     }
-    
+
     [HttpDelete("Question/Option/Delete/{optionId:int}")]
     public async Task<ActionResult> DeleteTestQuestionOption(int optionId)
     {

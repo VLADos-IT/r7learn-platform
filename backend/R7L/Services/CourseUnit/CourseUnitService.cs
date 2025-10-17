@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using R7L.DTO.CourseUnit;
 using R7L.Models;
-using R7L.Erorrs;
 using System.Collections;
 
 namespace R7L.Services.CourseUnit;
@@ -23,7 +22,7 @@ public class CourseUnitService : ICourseUnitService
             .FirstOrDefaultAsync(cu => cu.Id == id);
 
         if (courseUnit is null)
-            throw Errors.KeyNotFound("course unit", "id", id);
+            throw Errors.Errors.KeyNotFound("course unit", "id", id);
 
         return courseUnit;
     }
@@ -35,7 +34,7 @@ public class CourseUnitService : ICourseUnitService
             .FirstOrDefaultAsync(type => type.Name == typeName);
 
         if (type is null)
-            throw Errors.KeyNotFound("course unit type", "name", createDTO.CourseUnitTypeName);
+            throw Errors.Errors.KeyNotFound("course unit type", "name", createDTO.CourseUnitTypeName);
 
         var newCourseUnit = _context.CreateProxy<Models.CourseUnit>();
 
@@ -67,7 +66,7 @@ public class CourseUnitService : ICourseUnitService
     {
         Models.CourseUnit courseUnit = await GetCourseUnitById(courseUnitId);
         Models.Course course = courseUnit.Course;
-        
+
         int oldOrderInCourse = courseUnit.OrderInCourse;
         int min = Math.Min(oldOrderInCourse, newOrderInCourse);
         int max = Math.Max(oldOrderInCourse, newOrderInCourse);
@@ -76,7 +75,7 @@ public class CourseUnitService : ICourseUnitService
             return;
 
         List<Models.CourseUnit> courseUnitsToChange = await _context.CourseUnits
-            .Where(cu =>   cu.CourseId == course.Id
+            .Where(cu => cu.CourseId == course.Id
                         && cu.OrderInCourse >= min
                         && cu.OrderInCourse <= max)
             .ToListAsync();

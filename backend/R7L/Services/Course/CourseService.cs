@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using R7L.DTO.Course;
-using R7L.Erorrs;
 
 namespace R7L.Services.Course;
 
@@ -37,7 +36,7 @@ public class CourseService : ICourseService
             .FirstOrDefaultAsync(c => c.Id == courseId);
 
         if (course is null)
-            throw Errors.KeyNotFound("course", "id", courseId);
+            throw Errors.Errors.KeyNotFound("course", "id", courseId);
 
         List<Models.CourseUnit> courseUnits = course.CourseUnits
             .Where(cu => cu.IsDeleted[0] == false)

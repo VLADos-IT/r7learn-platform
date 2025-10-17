@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace R7L.Models;
+﻿namespace R7L.Models;
 
 public partial class UserCourseUnit
 {

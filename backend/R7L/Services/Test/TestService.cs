@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using R7L.DTO.Test;
 using R7L.DTO.CourseProgress;
-using R7L.Erorrs;
+using R7L.DTO.Test;
 using R7L.Models;
 using R7L.Services.CourseProgress;
-using static System.Net.Mime.MediaTypeNames;
+using System.Collections;
 
 namespace R7L.Services.Test;
 
@@ -26,7 +24,7 @@ public class TestService : ITestService
             .FirstOrDefaultAsync(t => t.CourseUnitId == courseUnitId);
 
         if (test is null)
-            throw Errors.KeyNotFound("test", "course unit id", courseUnitId);
+            throw Errors.Errors.KeyNotFound("test", "course unit id", courseUnitId);
 
         return test;
     }
@@ -37,7 +35,7 @@ public class TestService : ITestService
             .FirstOrDefaultAsync(t => t.Id == testId);
 
         if (test is null)
-            throw Errors.KeyNotFound("test", "id", testId);
+            throw Errors.Errors.KeyNotFound("test", "id", testId);
 
         return test;
     }
@@ -48,7 +46,7 @@ public class TestService : ITestService
             .FirstOrDefaultAsync(t => t.Name == name);
 
         if (type is null)
-            throw Errors.KeyNotFound("test question type", "name", name);
+            throw Errors.Errors.KeyNotFound("test question type", "name", name);
 
         return type;
     }
@@ -59,7 +57,7 @@ public class TestService : ITestService
             .FirstOrDefaultAsync(q => q.Id == questionId);
 
         if (question is null)
-            throw Errors.KeyNotFound("test question", "id", questionId);
+            throw Errors.Errors.KeyNotFound("test question", "id", questionId);
 
         return question;
     }
@@ -67,10 +65,10 @@ public class TestService : ITestService
     public async Task<Models.TestQuestionOption> GetTestQuestionOptionById(int optionId)
     {
         Models.TestQuestionOption? option = await _context.TestQuestionOptions
-            .FirstOrDefaultAsync (o => o.Id == optionId);
+            .FirstOrDefaultAsync(o => o.Id == optionId);
 
         if (option is null)
-            throw Errors.KeyNotFound("test question option", "id", optionId);
+            throw Errors.Errors.KeyNotFound("test question option", "id", optionId);
 
         return option;
     }
@@ -98,7 +96,7 @@ public class TestService : ITestService
             .FirstOrDefaultAsync(cu => cu.Id == createDTO.CourseUnitId);
 
         if (courseUnit is null)
-            throw Errors.KeyNotFound("course unit", "id", createDTO.CourseUnitId);
+            throw Errors.Errors.KeyNotFound("course unit", "id", createDTO.CourseUnitId);
 
         if (courseUnit.CourseUnitType.Name.ToLower() != _courseUnitTestTypeName)
             throw new Exception($"'course unit type' of 'test' must be '{_courseUnitTestTypeName}'");
@@ -137,7 +135,7 @@ public class TestService : ITestService
 
         newOption.QuestionId = createDTO.QuestionId;
         newOption.Content = createDTO.Content;
-        newOption.IsCorrect = new BitArray([ createDTO.IsCorrect ]);
+        newOption.IsCorrect = new BitArray([createDTO.IsCorrect]);
 
         await _context.TestQuestionOptions.AddAsync(newOption);
         await _context.SaveChangesAsync();
@@ -182,7 +180,7 @@ public class TestService : ITestService
         _context.TestQuestionOptions.RemoveRange(question.TestQuestionOptions);
         _context.TestQuestions.Remove(question);
 
-        await  _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteTestQuestionOption(int optionId)
@@ -214,7 +212,7 @@ public class TestService : ITestService
     public async Task CreateOrChangeTestQuestionAnswer(int userId, TestQuestionAnswerDTO answerDTO)
     {
         bool isAnswerExist = await _context.TestQuestionUserAnswers
-            .AnyAsync(ua => ua.UserId == userId 
+            .AnyAsync(ua => ua.UserId == userId
                          && ua.TestQuestionId == answerDTO.QuestionId);
 
         if (isAnswerExist)

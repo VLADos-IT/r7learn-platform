@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using R7L.DTO.User;
-using R7L.Erorrs;
-using System.Security.Cryptography;
-using Konscious.Security.Cryptography;
-using System.Text;
+﻿using Konscious.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using R7L.DTO.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace R7L.Services.User;
 
@@ -31,7 +29,7 @@ public class UserService : IUserService
         Models.User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
         if (user is null)
-            throw Errors.KeyNotFound("user", "id", id);
+            throw Errors.Errors.KeyNotFound("user", "id", id);
 
         return user;
     }
@@ -103,12 +101,12 @@ public class UserService : IUserService
 
         if (user.Login != updateDTO.Login)
             if (!(await IsLoginUnique(updateDTO.Login)))
-                throw Errors.Duplicate("login");
+                throw Errors.Errors.Duplicate("login");
 
         if (user.Email != updateDTO.Email)
             if (!(await IsEmailUnique(updateDTO.Email)))
-                throw Errors.Duplicate("email");
-        
+                throw Errors.Errors.Duplicate("email");
+
         user.Email = updateDTO.Email;
         user.Login = updateDTO.Login;
         user.FirstName = updateDTO.FirstName;

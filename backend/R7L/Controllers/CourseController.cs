@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using R7L.Services.Course;
-using R7L.Models;
-using R7L.DTO.CourseUnit;
+﻿using Microsoft.AspNetCore.Mvc;
 using R7L.DTO.Course;
+using R7L.DTO.CourseUnit;
+using R7L.Models;
+using R7L.Services.Course;
 
 namespace R7L.Controllers;
 

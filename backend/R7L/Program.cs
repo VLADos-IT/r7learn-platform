@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using R7L.Services.Resource;
-using System.Net.Http;
 
 
 var builder = WebApplication.CreateBuilder(args);

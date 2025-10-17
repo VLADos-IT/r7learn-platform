@@ -12,7 +12,7 @@ public class CourseUnitReadDTO
 
     public int MaxDegree { get; set; }
 
-    
+
     public CourseUnitReadDTO(Models.CourseUnit courseUnit)
     {
         Id = courseUnit.Id;

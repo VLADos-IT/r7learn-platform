@@ -3,7 +3,7 @@
 namespace R7L.DTO.Test;
 
 public class TestQuestionOptionUpdateDTO
-{   
+{
     [Required]
     public int Id { get; set; }
 

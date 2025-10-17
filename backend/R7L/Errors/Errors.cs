@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace R7L.Erorrs;
+namespace R7L.Errors;
 
 public class Errors
 {

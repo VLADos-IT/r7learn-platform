@@ -1,6 +1,4 @@
-﻿using R7L.Models;
-
-namespace R7L.DTO.User;
+﻿namespace R7L.DTO.User;
 
 public class UserReadDTO
 {

@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using R7L.Services.Resource;
-using Microsoft.Extensions.Configuration;
 
 [ApiController]
 [Route("api/resource")]

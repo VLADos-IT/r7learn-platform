@@ -10,7 +10,7 @@ public class CourseReadDTO
 
     public string? Description { get; set; }
 
-    
+
     public CourseReadDTO(Models.Course course)
     {
         Id = course.Id;
