@@ -25,13 +25,31 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy .env.example to .env
-        run: cp .env.example .env
+      - name: Copy .env.example to .env and inject secrets
+        run: |
+          cp .env.example .env
+          if [ -n "${{ secrets.POSTGRES_USER }}" ]; then
+            sed -i "s|^POSTGRES_USER=.*|POSTGRES_USER=${{ secrets.POSTGRES_USER }}|" .env || true
+          fi
+          if [ -n "${{ secrets.POSTGRES_PASSWORD }}" ]; then
+            sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}|" .env || true
+          fi
+          if [ -n "${{ secrets.POSTGRES_DB }}" ]; then
+            sed -i "s|^POSTGRES_DB=.*|POSTGRES_DB=${{ secrets.POSTGRES_DB }}|" .env || true
+          fi
+          # JWT_SECRET: если задан как secret, подставляем; иначе завершаем с ошибкой.
+          if [ -n "${{ secrets.JWT_SECRET }}" ]; then
+            sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|" .env || true
+          else
+            echo "Error: JWT_SECRET is not set in repository secrets. Please add JWT_SECRET to Settings → Secrets → Actions."
+            exit 1
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
