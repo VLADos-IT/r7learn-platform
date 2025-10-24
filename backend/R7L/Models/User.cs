@@ -22,5 +22,7 @@ public partial class User
 
     public virtual ICollection<TestQuestionUserAnswer> TestQuestionUserAnswers { get; set; } = new List<TestQuestionUserAnswer>();
 
+    public virtual ICollection<UserCourseUnitComment> UserCourseUnitComments { get; set; } = new List<UserCourseUnitComment>();
+
     public virtual ICollection<UserCourseUnit> UserCourseUnits { get; set; } = new List<UserCourseUnit>();
 }

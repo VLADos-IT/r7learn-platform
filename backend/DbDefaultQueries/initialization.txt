@@ -40,6 +40,19 @@ CREATE TABLE course_unit (
 	max_degree INT NOT NULL
 );
 
+CREATE TABLE user_course_unit_comment (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL
+	REFERENCES "user"(id),
+	course_unit_id INT NOT NULL
+	REFERENCES course_unit(id),
+	reply_to INT DEFAULT NULL
+	REFERENCES user_course_unit_comment(id),
+	content VARCHAR(255) NOT NULL,
+	is_deleted BOOLEAN NOT NULL
+	DEFAULT FALSE
+);
+
 CREATE TABLE user_course_unit (
 	id SERIAL PRIMARY KEY,
 	user_id INT NOT NULL

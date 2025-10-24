@@ -24,5 +24,7 @@ public partial class CourseUnit
 
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
+    public virtual ICollection<UserCourseUnitComment> UserCourseUnitComments { get; set; } = new List<UserCourseUnitComment>();
+
     public virtual ICollection<UserCourseUnit> UserCourseUnits { get; set; } = new List<UserCourseUnit>();
 }

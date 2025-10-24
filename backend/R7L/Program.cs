@@ -1,15 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using R7L;
-using R7L.Services.User;
-using R7L.Services.Course;
-using R7L.Services.CourseUnit;
-using R7L.Services.CourseProgress;
-using R7L.Services.Test;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
+using R7L;
+using R7L.Services.Comment;
+using R7L.Services.Course;
+using R7L.Services.CourseProgress;
+using R7L.Services.CourseUnit;
 using R7L.Services.Resource;
+using R7L.Services.Test;
+using R7L.Services.User;
+using System.Security.Claims;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseLazyLoadingProxies().UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseUnitService, CourseUnitService>();
 builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();
