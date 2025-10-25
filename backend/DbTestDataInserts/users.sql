@@ -3,5 +3,5 @@ INSERT INTO "user"
 VALUES
 ('luchkov', 'password', 1, 'luchkov@xorg.su', 'Vlad', 'Luchkov', '2025-06-14'),
 ('wednesday', 'password', 2, 'wednesday@gmail.com', 'Wednesday', 'Addams', '2025-01-26'),
-('5opka', 'password', 2, '5opka@mail.ru', 'Kirill', 'Baranov', '2025-03-16'),
+('5opka', 'password', 2, '5opka@mail.ru', 'Kirill', 'Baranov', '2025-03-15'),
 ('radio-pyramid', 'password', 2, 'i.love.money@radio.su', 'Navoroval', 'Teftelyevich', '2025-03-17');
