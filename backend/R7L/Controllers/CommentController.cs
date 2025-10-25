@@ -15,22 +15,24 @@ public class CommentController : ControllerBase
         _service = commentService;
     }
 
-    [HttpGet("{courseUnitId:int}/{since:int}/{count:int}")]
+
+
+    [HttpGet("{courseUnitId:int}/{sortAscending:bool}/{since:int}/{count:int}")]
     public async Task<ActionResult<List<CommentReadDTO>>> GetAllCommentsToCourseUnit(int courseUnitId,
-        int since, int count)
+         bool sortAscending, int since, int count)
     {
         List<CommentReadDTO> allCommentsToCourseUnit =
-            await _service.GetAllCommentsToCourseUnit(courseUnitId, since, count);
+            await _service.GetComments(courseUnitId, null, sortAscending, since, count);
 
         return Ok(allCommentsToCourseUnit);
     }
 
-    [HttpGet("/RepliesTo/{commentId:int}/{since:int}/{count:int}")]
-    public async Task<ActionResult<List<CommentReadDTO>>> GetAllRepliesToComment(int commentId,
-        int since, int count)
+    [HttpGet("{courseUnitId:int}/RepliesTo/{commentId:int}/{sortAscending:bool}/{since:int}/{count:int}")]
+    public async Task<ActionResult<List<CommentReadDTO>>> GetAllRepliesToComment(int courseUnitId,
+        int commentId, bool sortAscending, int since, int count)
     {
         List<CommentReadDTO> allRepliesToComment =
-            await _service.GetAllRepliesToComment(commentId, since, count);
+            await _service.GetComments(courseUnitId, commentId, sortAscending, since, count);
 
         return Ok(allRepliesToComment);
     }

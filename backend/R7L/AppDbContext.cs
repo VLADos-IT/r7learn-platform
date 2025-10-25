@@ -282,6 +282,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("is_deleted");
+            entity.Property(e => e.PublicationDateTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("publication_date_time");
             entity.Property(e => e.ReplyTo).HasColumnName("reply_to");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 

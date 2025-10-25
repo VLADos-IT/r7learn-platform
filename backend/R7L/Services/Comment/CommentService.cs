@@ -15,6 +15,18 @@ public class CommentService : ICommentService
     }
 
 
+    public async Task<UserCourseUnitComment> GetCommentById(int commentId)
+    {
+        UserCourseUnitComment? comment = await _context.UserCourseUnitComments
+            .Where(c => c.Id == commentId)
+            .FirstOrDefaultAsync();
+
+        if (comment is null)
+            throw Errors.Errors.KeyNotFound("user course unit comment", "id", commentId);
+
+        return comment;
+    }
+
     public async Task<UserCourseUnitComment> CreateComment(CommentCreateDTO createDTO)
     {
         var newComment = _context.CreateProxy<UserCourseUnitComment>();
@@ -24,49 +36,38 @@ public class CommentService : ICommentService
         newComment.Content = createDTO.Content;
         newComment.ReplyTo = createDTO.ReplyToCommentId;
 
+        newComment.PublicationDateTime = DateTime.Now;
+
         await _context.UserCourseUnitComments.AddAsync(newComment);
         await _context.SaveChangesAsync();
 
         return newComment;
     }
 
-    public async Task<List<CommentReadDTO>> GetAllRepliesToComment(int commentId,
-        int since, int count)
+    public async Task<List<CommentReadDTO>> GetComments(int courseUnitId,
+        int? replyTo, bool sortAscending, int since, int count)
     {
-        return await _context.UserCourseUnitComments
-            .Where(c => c.ReplyTo == commentId && !c.IsDeleted)
-            .Include(c => c.User)
-            .Select(c => new CommentReadDTO(c, null))
+        var comments = _context.UserCourseUnitComments
+            .Where(c => c.CourseUnitId == courseUnitId && c.ReplyTo == replyTo && !c.IsDeleted)
+            .Include(c => c.User);
+
+        var sortedComments = (sortAscending)
+            ? comments.OrderBy(c => c.PublicationDateTime)
+            : comments.OrderByDescending(c => c.PublicationDateTime);
+        
+        return await sortedComments
             .Skip(since - 1)
             .Take(count)
+            .Select(c => new CommentReadDTO(c, (replyTo == null)
+                ? c.InverseReplyToNavigation.Where(c => !c.IsDeleted).Count()
+                : null
+            ))
             .ToListAsync();
-    }
-
-    public async Task<List<CommentReadDTO>> GetAllCommentsToCourseUnit(int courseUnitId,
-        int since, int count)
-    {
-        List<CommentReadDTO> comments = await _context.UserCourseUnitComments
-            .Where(c => c.CourseUnitId == courseUnitId && c.ReplyTo == null && !c.IsDeleted)
-            .Include(c => c.User)
-            .Select(c => new CommentReadDTO(c, c.InverseReplyToNavigation
-                .Where(c => !c.IsDeleted)
-                .Count()))
-            .Skip(since - 1)
-            .Take(count)
-            .ToListAsync();
-
-        return comments;
     }
 
     public async Task DeleteComment(int commentId)
     {
-        Models.UserCourseUnitComment? comment = await _context.UserCourseUnitComments
-            .Where(c => c.Id == commentId)
-            .FirstOrDefaultAsync();
-
-        if (comment is null)
-            throw Errors.Errors.KeyNotFound("user course unit comment", "id", commentId);
-
+        UserCourseUnitComment comment = await GetCommentById(commentId);
         comment.IsDeleted = true;
         await _context.SaveChangesAsync();
     }

@@ -12,6 +12,8 @@ public class CommentReadDTO
 
     public string Content { get; set; }
 
+    public DateTime PublicationDateTime {  get; set; }
+
     public int? RepliesCount { get; set; }
 
 
@@ -21,6 +23,7 @@ public class CommentReadDTO
         AuthorFirstName = comment.User.FirstName;
         AuthorLastName = comment.User.LastName;
         Content = comment.Content;
+        PublicationDateTime = comment.PublicationDateTime;
 
         RepliesCount = repliesCount;
     }

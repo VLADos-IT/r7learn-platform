@@ -12,6 +12,8 @@ public partial class UserCourseUnitComment
 
     public string Content { get; set; } = null!;
 
+    public DateTime PublicationDateTime { get; set; }
+
     public bool IsDeleted { get; set; }
 
     public virtual CourseUnit CourseUnit { get; set; } = null!;

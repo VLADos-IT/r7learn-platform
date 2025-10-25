@@ -7,9 +7,7 @@ public interface ICommentService
 {
     Task<UserCourseUnitComment> CreateComment(CommentCreateDTO createDTO);
 
-    Task<List<CommentReadDTO>> GetAllRepliesToComment(int commentId, int since, int count);
-
-    Task<List<CommentReadDTO>> GetAllCommentsToCourseUnit(int courseUnitId, int since, int count);
+    Task<List<CommentReadDTO>> GetComments(int courseUnitId, int? replyTo,bool sortAscending, int since, int count);
 
     Task DeleteComment(int commentId);
 }
