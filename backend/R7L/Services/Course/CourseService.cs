@@ -39,7 +39,7 @@ public class CourseService : ICourseService
             throw Errors.Errors.KeyNotFound("course", "id", courseId);
 
         List<Models.CourseUnit> courseUnits = course.CourseUnits
-            .Where(cu => cu.IsDeleted[0] == false)
+            .Where(cu => !cu.IsDeleted)
             .OrderBy(unit => unit.OrderInCourse)
             .ToList();
 

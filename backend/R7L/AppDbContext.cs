@@ -76,8 +76,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.CourseUnitTypeId).HasColumnName("course_unit_type_id");
             entity.Property(e => e.IsDeleted)
-                .HasDefaultValueSql("'0'::bit(1)")
-                .HasColumnType("bit(1)")
+                .HasDefaultValue(false)
                 .HasColumnName("is_deleted");
             entity.Property(e => e.MaxDegree).HasColumnName("max_degree");
             entity.Property(e => e.Name)

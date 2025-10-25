@@ -90,8 +90,7 @@ public class CourseUnitService : ICourseUnitService
     public async Task DeleteCourseUnit(int courseUnitId)
     {
         Models.CourseUnit courseUnit = await GetCourseUnitById(courseUnitId);
-
-        courseUnit.IsDeleted = new BitArray([true]);
+        courseUnit.IsDeleted = false;
 
         await _context.SaveChangesAsync();
     }

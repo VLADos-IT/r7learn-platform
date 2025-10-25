@@ -8,7 +8,7 @@ public partial class CourseUnit
 
     public int CourseId { get; set; }
 
-    public BitArray IsDeleted { get; set; } = null!;
+    public bool IsDeleted { get; set; }
 
     public int OrderInCourse { get; set; }
 
