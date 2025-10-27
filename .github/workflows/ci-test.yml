@@ -8,9 +8,7 @@ on:
 
 jobs:
   test:
-    name: Build & Integration Test
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:15
@@ -19,7 +17,13 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         options: >-
-          --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
+          --health-cmd="pg_isready -U $${POSTGRES_USER}" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+        volumes:
+          - ./initialization.sql:/docker-entrypoint-initdb.d/init.sql:ro
+          - ./default_inserts.sql:/docker-entrypoint-initdb.d/inserts.sql:ro
 
     env:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -30,27 +34,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy .env.example to .env and inject secrets (generate JWT if missing)
+      - name: Copy .env.example to .env and inject secrets
         run: |
           cp .env.example .env
-          # Use repository secret JWT_SECRET if provided; otherwise generate a temporary one for CI.
           if [ -n "${{ secrets.JWT_SECRET }}" ]; then
             NEW_JWT="${{ secrets.JWT_SECRET }}"
           else
-            echo "No JWT_SECRET secret found — generating temporary secret for CI"
             NEW_JWT=$(openssl rand -base64 32)
           fi
-          # Replace JWT_SECRET in .env (do not print the secret)
           sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${NEW_JWT}|" .env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Network monitoring create
-        run: docker network create monitoring-net || true
-
-      - name: Network r7l create
-        run: docker network create r7l-network || true
 
       - name: Build all containers
         run: docker compose build
@@ -58,17 +53,21 @@ jobs:
       - name: Start all containers
         run: docker compose up -d
 
-      - name: Show running containers
-        run: docker ps -a
-
-      - name: Wait and run integration tests
+      - name: Wait for Postgres to be ready
         run: |
-          docker compose run --rm r7l-integration-test || (
+          until docker compose exec -T postgres pg_isready -U $POSTGRES_USER; do
+            echo "Waiting for Postgres..."
+            sleep 1
+          done
+          
+      - name: Run integration tests
+        run: |
+          docker compose run --rm ***-integration-test || (
             docker compose logs > compose-logs.txt
             cat compose-logs.txt
             exit 1
           )
 
-      - name: Stop containers
+      - name: Stop containers and clean volumes
         if: always()
         run: docker compose down -v
