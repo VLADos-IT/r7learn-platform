@@ -8,7 +8,9 @@ on:
 
 jobs:
   test:
+    name: Build & Integration Test
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15
@@ -22,8 +24,8 @@ jobs:
           --health-timeout=5s 
           --health-retries=5
         volumes:
-          - ./initialization.sql:/docker-entrypoint-initdb.d/init.sql:ro
-          - ./default_inserts.sql:/docker-entrypoint-initdb.d/inserts.sql:ro
+          - ./backend/DbDefaultQueries/initialization.sql:/docker-entrypoint-initdb.d/initialization.sql:ro
+          - ./backend/DbDefaultQueries/default_inserts.sql:/docker-entrypoint-initdb.d/default_inserts.sql:ro
 
     env:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -34,12 +36,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy .env.example to .env and inject secrets
+      - name: Copy .env.example to .env and inject secrets (generate JWT if missing)
         run: |
           cp .env.example .env
           if [ -n "${{ secrets.JWT_SECRET }}" ]; then
             NEW_JWT="${{ secrets.JWT_SECRET }}"
           else
+            echo "No JWT_SECRET secret found — generating temporary secret for CI"
             NEW_JWT=$(openssl rand -base64 32)
           fi
           sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${NEW_JWT}|" .env
@@ -47,27 +50,39 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Create networks
+        run: |
+          docker network create monitoring-net || true
+          docker network create r7l-network || true
+
       - name: Build all containers
         run: docker compose build
 
-      - name: Start all containers
+      - name: Start containers in background
         run: docker compose up -d
 
       - name: Wait for Postgres to be ready
         run: |
-          until docker compose exec -T postgres pg_isready -U $POSTGRES_USER; do
-            echo "Waiting for Postgres..."
-            sleep 1
+          echo "Waiting for Postgres..."
+          until docker exec $(docker ps -qf "name=postgres") pg_isready -U ${{ secrets.POSTGRES_USER }}; do
+            sleep 2
           done
-          
+          echo "Postgres is ready!"
+
+      - name: Run database migrations (optional)
+        run: docker compose run --rm backend dotnet ef database update
+
+      - name: Show running containers
+        run: docker ps -a
+
       - name: Run integration tests
         run: |
-          docker compose run --rm ***-integration-test || (
+          docker compose run --rm r7l-integration-test || (
             docker compose logs > compose-logs.txt
             cat compose-logs.txt
             exit 1
           )
 
-      - name: Stop containers and clean volumes
+      - name: Stop containers
         if: always()
         run: docker compose down -v
