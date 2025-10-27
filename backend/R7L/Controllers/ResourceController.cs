@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using R7L.Services.Resource;
+using R7L.DTO.Resource;
 
 [ApiController]
 [Route("api/resource")]
@@ -15,6 +16,7 @@ public class ResourceController : ControllerBase
         _resourceProcessingService = resourceProcessingService;
         _config = config;
     }
+
     [HttpGet("public/{*path}")]
     [AllowAnonymous]
     public IActionResult GetPublicImage(string path)
@@ -41,6 +43,7 @@ public class ResourceController : ControllerBase
         var dirPath = Path.Combine(_resourceRoot, path ?? "");
         if (!Directory.Exists(dirPath))
             return NotFound();
+
         var files = Directory.GetFiles(dirPath)
             .Select(f => Path.GetFileName(f))
             .ToArray();
@@ -76,11 +79,22 @@ public class ResourceController : ControllerBase
 
     [Authorize]
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadResource([FromForm] IFormFile file, [FromForm] string subdir, [FromForm] int? courseId, [FromForm] int? orderInCourse, [FromForm] string name)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadResource([FromForm] UploadResourceRequest request)
     {
-        string fileName = !string.IsNullOrWhiteSpace(name) ? name + Path.GetExtension(file.FileName) : file.FileName;
+        var file = request.File;
+        var subdir = request.Subdir;
+        var courseId = request.CourseId;
+        var orderInCourse = request.OrderInCourse;
+        var name = request.Name;
+
+        string fileName = !string.IsNullOrWhiteSpace(name)
+            ? name + Path.GetExtension(file.FileName)
+            : file.FileName;
+
         string savePath;
         string returnPath;
+
         if ((subdir ?? "").ToLower() == "exercise_desc")
         {
             var tempDir = Path.Combine(_resourceRoot, "temp_exercise_desc");
@@ -110,8 +124,12 @@ public class ResourceController : ControllerBase
     }
     [Authorize(Roles = "student")]
     [HttpPost("upload/temp_exercise")]
-    public async Task<IActionResult> UploadTempExercise([FromForm] IFormFile file, [FromForm] string userId)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadTempExercise([FromForm] UploadTempExerciseRequest request)
     {
+        var file = request.File;
+        var userId = request.UserId;
+
         if (file == null || file.Length == 0)
             return BadRequest(new { error = "Файл не выбран" });
 
@@ -126,9 +144,11 @@ public class ResourceController : ControllerBase
 
         using (var stream = new FileStream(savePath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+                await file.CopyToAsync(stream);
         }
 
         return Ok(new { path = $"temp_exercise/{fileName}" });
     }
+
+
 }
