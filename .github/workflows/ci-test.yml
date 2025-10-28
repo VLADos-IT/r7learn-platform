@@ -15,22 +15,16 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: r7l
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-        volumes:
-          - ./backend/DbDefaultQueries/initialization.sql:/docker-entrypoint-initdb.d/001_initialization.sql:ro
-          - ./backend/DbDefaultQueries/default_inserts.sql:/docker-entrypoint-initdb.d/002_default_inserts.sql:ro
+          --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
 
     env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: r7l
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
 
     steps:
       - name: Checkout repository
@@ -39,58 +33,42 @@ jobs:
       - name: Copy .env.example to .env and inject secrets (generate JWT if missing)
         run: |
           cp .env.example .env
+          # Use repository secret JWT_SECRET if provided; otherwise generate a temporary one for CI.
           if [ -n "${{ secrets.JWT_SECRET }}" ]; then
             NEW_JWT="${{ secrets.JWT_SECRET }}"
           else
             echo "No JWT_SECRET secret found — generating temporary secret for CI"
             NEW_JWT=$(openssl rand -base64 32)
           fi
+          # Replace JWT_SECRET in .env (do not print the secret)
           sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${NEW_JWT}|" .env
-
-      - name: Verify SQL initialization files exist
-        run: |
-          echo "Checking that SQL files exist..."
-          ls -l ./backend/DbDefaultQueries/
-          test -f ./backend/DbDefaultQueries/initialization.sql
-          test -f ./backend/DbDefaultQueries/default_inserts.sql
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Create networks
-        run: |
-          docker network create monitoring-net || true
-          docker network create r7l-network || true
+      - name: Network monitoring create
+        run: docker network create monitoring-net || true
+
+      - name: Network r7l create
+        run: docker network create r7l-network || true
 
       - name: Build all containers
         run: docker compose build
 
-      - name: Start containers in background
+      - name: Start all containers
         run: docker compose up -d
-
-      - name: Wait for Postgres to be ready
-        run: |
-          echo "Waiting for Postgres..."
-          until docker exec $(docker ps -qf "name=postgres") pg_isready -U postgres; do
-            sleep 2
-          done
-          echo "Postgres is ready!"
-
-      - name: Run database migrations
-        run: docker compose run --rm backend dotnet ef database update || echo "No EF migrations"
 
       - name: Show running containers
         run: docker ps -a
 
-      - name: Run integration tests
+      - name: Wait and run integration tests
         run: |
           docker compose run --rm r7l-integration-test || (
-            echo "Integration tests failed!"
             docker compose logs > compose-logs.txt
             cat compose-logs.txt
             exit 1
           )
 
-      - name: Stop containers and cleanup
+      - name: Stop containers
         if: always()
         run: docker compose down -v
