@@ -15,22 +15,22 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: r7l
         options: >-
-          --health-cmd="pg_isready -U $${POSTGRES_USER}" 
-          --health-interval=10s 
-          --health-timeout=5s 
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
           --health-retries=5
         volumes:
-          - ./backend/DbDefaultQueries/initialization.sql:/docker-entrypoint-initdb.d/initialization.sql:ro
-          - ./backend/DbDefaultQueries/default_inserts.sql:/docker-entrypoint-initdb.d/default_inserts.sql:ro
+          - ./backend/DbDefaultQueries/initialization.sql:/docker-entrypoint-initdb.d/001_initialization.sql:ro
+          - ./backend/DbDefaultQueries/default_inserts.sql:/docker-entrypoint-initdb.d/002_default_inserts.sql:ro
 
     env:
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: r7l
 
     steps:
       - name: Checkout repository
@@ -46,6 +46,13 @@ jobs:
             NEW_JWT=$(openssl rand -base64 32)
           fi
           sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${NEW_JWT}|" .env
+
+      - name: Verify SQL initialization files exist
+        run: |
+          echo "Checking that SQL files exist..."
+          ls -l ./backend/DbDefaultQueries/
+          test -f ./backend/DbDefaultQueries/initialization.sql
+          test -f ./backend/DbDefaultQueries/default_inserts.sql
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -64,13 +71,13 @@ jobs:
       - name: Wait for Postgres to be ready
         run: |
           echo "Waiting for Postgres..."
-          until docker exec $(docker ps -qf "name=postgres") pg_isready -U ${{ secrets.POSTGRES_USER }}; do
+          until docker exec $(docker ps -qf "name=postgres") pg_isready -U postgres; do
             sleep 2
           done
           echo "Postgres is ready!"
 
-      - name: Run database migrations (optional)
-        run: docker compose run --rm backend dotnet ef database update
+      - name: Run database migrations
+        run: docker compose run --rm backend dotnet ef database update || echo "No EF migrations"
 
       - name: Show running containers
         run: docker ps -a
@@ -78,11 +85,12 @@ jobs:
       - name: Run integration tests
         run: |
           docker compose run --rm r7l-integration-test || (
+            echo "Integration tests failed!"
             docker compose logs > compose-logs.txt
             cat compose-logs.txt
             exit 1
           )
 
-      - name: Stop containers
+      - name: Stop containers and cleanup
         if: always()
         run: docker compose down -v
