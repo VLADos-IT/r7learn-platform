@@ -9,8 +9,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - r7l_postgres_data:/var/lib/postgresql/data
-      - ./backend/DbDefaultQueries/initialization.txt:/docker-entrypoint-initdb.d/01_initialization.sql
-      - ./backend/DbDefaultQueries/default_inserts.txt:/docker-entrypoint-initdb.d/02_default_inserts.sql
+      - ./backend/DbDefaultQueries/initialization.sql:/docker-entrypoint-initdb.d/01_initialization.sql
+      - ./backend/DbDefaultQueries/default_inserts.sql:/docker-entrypoint-initdb.d/02_default_inserts.sql
     networks:
       - r7l-network
 
