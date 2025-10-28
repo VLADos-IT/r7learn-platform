@@ -1,7 +1,11 @@
-FROM nginx:alpine
+FROM node:20-alpine AS build
+WORKDIR /app
 
-WORKDIR /usr/share/nginx/html
+COPY package.json ./
+RUN npm install
 
-COPY admin_r7l /usr/share/nginx/html/admin_r7learn
+COPY . .
+RUN npm run build
 
-EXPOSE 80
+FROM nginx:alpine AS admin
+COPY --from=build /app/dist /usr/share/nginx/html/admin_r7learn

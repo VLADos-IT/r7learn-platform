@@ -94,14 +94,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function setBuildVersionFooter() {
 	try {
-		const resp = await fetch('/r7l/build_version.json');
+		const resp = await fetch('/build_version.json');
 		if (!resp.ok) return;
-		const version = await resp.text();
+
+		const data = await resp.json();
+
 		const buildSpan = document.getElementById('footer-build-version');
 		if (buildSpan) {
-			buildSpan.textContent = `Build: ${version.trim()}`;
+			buildSpan.textContent = `Build: ${data.version}`;
 		}
 	} catch (e) {
+		console.error('Failed to load build version', e);
 	}
 }
 

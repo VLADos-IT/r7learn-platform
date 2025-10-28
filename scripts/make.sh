@@ -10,7 +10,7 @@ NGINX_ENABLED="/etc/nginx/sites-enabled"
 HTPASSWD_SRC="$INSTALL_DIR/nginx/.htpasswd"
 HTPASSWD_DST="/etc/nginx/.htpasswd"
 # Replace with your actual email for certbot notifications
-EMAIL="your-email@example.com"
+EMAIL="vlccommunicate@gmail.com"
 
 CRON_JOB="0 */3 * * * $INSTALL_DIR/scripts/backup.sh"
 NETWORK_NAME="monitoring-net"
