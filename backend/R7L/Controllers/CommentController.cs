@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using R7L.DTO.Comment;
 using R7L.Services.Comment;
 
@@ -6,6 +7,7 @@ namespace R7L.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _service;
@@ -46,6 +48,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpDelete("{commentId:int}")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult> DeleteComment(int commentId)
     {
         await _service.DeleteComment(commentId);
