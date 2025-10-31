@@ -49,6 +49,7 @@ CREATE TABLE user_course_unit_comment (
 	reply_to INT DEFAULT NULL
 	REFERENCES user_course_unit_comment(id),
 	content VARCHAR(255) NOT NULL,
+	publication_date_time TIMESTAMP NOT NULL,
 	is_deleted BOOLEAN NOT NULL
 	DEFAULT FALSE
 );

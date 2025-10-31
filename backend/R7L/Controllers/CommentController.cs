@@ -29,12 +29,12 @@ public class CommentController : ControllerBase
         return Ok(allCommentsToCourseUnit);
     }
 
-    [HttpGet("{courseUnitId:int}/RepliesTo/{commentId:int}/{sortAscending:bool}/{since:int}/{count:int}")]
+    [HttpGet("{courseUnitId:int}/RepliesTo/{commentId:int}/{since:int}/{count:int}")]
     public async Task<ActionResult<List<CommentReadDTO>>> GetAllRepliesToComment(int courseUnitId,
-        int commentId, bool sortAscending, int since, int count)
+        int commentId, int since, int count)
     {
         List<CommentReadDTO> allRepliesToComment =
-            await _service.GetComments(courseUnitId, commentId, sortAscending, since, count);
+            await _service.GetComments(courseUnitId, commentId, true, since, count);
 
         return Ok(allRepliesToComment);
     }
