@@ -3,7 +3,6 @@ import { initUnitHandlers } from './handlers/unit.js';
 import { initTestHandlers } from './handlers/test.js';
 import { initExerciseHandlers } from './handlers/exercise.js';
 import { initFileInputHandlers } from './handlers/fileInput.js';
-import { fillTestCourseSelect, fillExerciseCourseSelect } from './modules/ui.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	await initCourseHandlers();
@@ -12,6 +11,3 @@ document.addEventListener('DOMContentLoaded', async () => {
 	await initExerciseHandlers();
 	initFileInputHandlers();
 });
-
-fillTestCourseSelect();
-fillExerciseCourseSelect();

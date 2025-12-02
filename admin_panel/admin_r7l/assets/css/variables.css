@@ -35,6 +35,8 @@
 	--course-card-border: #d0d0d0;
 
 	--splash-bg: rgba(255,255,255,0.95);
+    --header-height: 4rem;
+	--footer-height: 2.5rem;
 }
 
 html[data-theme='dark'] {
@@ -51,7 +53,7 @@ html[data-theme='dark'] {
 	
 	--auth-bg: #181818;
 
-        --profile-ct: #abaaaa21;
+    --profile-ct: #abaaaa21;
 	--profile-b: #bac6c712;
 
 	--header-bg: var(--primary-color);

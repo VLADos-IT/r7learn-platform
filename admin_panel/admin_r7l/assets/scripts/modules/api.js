@@ -1,20 +1,29 @@
-const API_BASE = 'https://r7learn.xorg.su/api';
+const API_BASE = '/api';
 
-function getCookie(name) {
+export function getCookie(name) {
 	const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
 	return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-export async function sendRequest(method, endpoint, body) {
+export async function sendRequest(method, endpoint, body, isFileUpload = false) {
 	const token = getCookie('jwt');
-	const headers = { 'Content-Type': 'application/json' };
+	const headers = {};
+	if (!isFileUpload) {
+		headers['Content-Type'] = 'application/json';
+	}
 	if (token) headers['Authorization'] = `Bearer ${token}`;
-	const res = await fetch(`${API_BASE}${endpoint}`, {
+
+	const options = {
 		method,
 		headers,
-		body: body ? JSON.stringify(body) : undefined,
 		credentials: 'include'
-	});
+	};
+
+	if (body) {
+		options.body = isFileUpload ? body : JSON.stringify(body);
+	}
+
+	const res = await fetch(`${API_BASE}${endpoint}`, options);
 	if (!res.ok) throw new Error(await res.text());
 	return res.status === 204 ? null : res.json();
 }

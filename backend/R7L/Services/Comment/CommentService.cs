@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using R7L.DTO.Comment;
 using R7L.Models;
 
@@ -54,14 +54,11 @@ public class CommentService : ICommentService
         var sortedComments = (sortAscending)
             ? comments.OrderBy(c => c.PublicationDateTime)
             : comments.OrderByDescending(c => c.PublicationDateTime);
-        
+
         return await sortedComments
             .Skip(since - 1)
             .Take(count)
-            .Select(c => new CommentReadDTO(c, (replyTo == null)
-                ? c.InverseReplyToNavigation.Where(c => !c.IsDeleted).Count()
-                : null
-            ))
+            .Select(c => new CommentReadDTO(c, c.InverseReplyToNavigation.Where(c => !c.IsDeleted).Count()))
             .ToListAsync();
     }
 

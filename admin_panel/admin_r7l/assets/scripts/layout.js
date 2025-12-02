@@ -26,4 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	loadComponent('/header.html', 'header-placeholder').then(() => {
 	});
 	loadComponent('/footer.html', 'footer-placeholder');
+
+	const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+	const applyTheme = isDark => document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+	applyTheme(darkQuery.matches);
+	darkQuery.addEventListener("change", e => applyTheme(e.matches));
 });

@@ -1,11 +1,11 @@
 import { sendTestAnswers } from '../api/test.js';
 import { showAlert } from '../components/alert.js';
 import { escapeHtml } from '../utils/escape.js';
+import { loadTemplate } from '../utils/template.js';
 
 async function injectTestTemplates() {
 	if (document.getElementById('test-not-available')) return;
-	const res = await fetch('assets/pages/test.templates.html');
-	const html = await res.text();
+	const html = await loadTemplate('assets/pages/test.templates.html');
 	const temp = document.createElement('div');
 	temp.innerHTML = html;
 	document.body.appendChild(temp);

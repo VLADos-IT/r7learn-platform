@@ -2,7 +2,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 2rem;
+	gap: 1.5rem;
 	text-align: center;
 	width: 100%;
 	box-sizing: border-box;
@@ -10,18 +10,26 @@
 }
 
 .course-card {
-	background-color: var(--white);
-	padding: 2rem 1rem 1.5rem 1rem;
+	background-color: var(--course-card-bg);
+	color: var(--course-card-text);
+	border: 1px solid var(--course-card-border, #ccc);
+	padding: 1.5rem 1rem;
 	border-radius: 0.5rem;
 	text-align: center;
 	text-decoration: none;
-	color: var(--text-color);
 	width: 300px;
+	max-width: 90vw;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
 	box-sizing: border-box;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .course-card-img {
@@ -29,24 +37,24 @@
 	max-width: 180px;
 	height: 120px;
 	object-fit: contain;
-	margin-bottom: 1rem;
+	margin-bottom: 0.5rem;
 	display: block;
 }
 
 .course-card h2 {
-	font-size: 1.5rem;
+	font-size: 1.3rem;
 	margin: 0;
 }
 
 .course-card p {
-	font-size: 1rem;
-	color: #666;
+	font-size: 0.95rem;
+	color: var(--course-card-text-secondary, #666);
 }
 
 button {
 	padding: 0.625rem 1.25rem;
 	font-size: 1rem;
-	background-color: var(--primary-color);
+	background-color: var(--profile-b);
 	border: none;
 	color: var(--white);
 	border-radius: 0.3125rem;
@@ -125,20 +133,20 @@ button:hover {
 
 .splash-screen {
 	position: fixed;
-	z-index: 10000;
 	inset: 0;
-	background: rgba(47, 62, 70, 0.85);
+	background: rgba(0, 0, 0, 0.6);
 	display: flex;
-	align-items: center;
 	justify-content: center;
+	align-items: center;
+	z-index: 9999;
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity 0.35s;
+	transition: opacity 0.3s ease;
 }
 
 .splash-screen.splash-visible {
 	opacity: 1;
-	pointer-events: all;
+	pointer-events: auto;
 }
 
 .splash-screen.splash-hide {
@@ -146,16 +154,6 @@ button:hover {
 	pointer-events: none;
 }
 
-.splash-spinner-wrap {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 2.5rem 3.5rem;
-	background: rgba(255, 255, 255, 0.10);
-	border-radius: 1.5rem;
-	box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.10);
-	animation: splash-pop 0.6s cubic-bezier(.23, 1.02, .56, .98);
-}
 
 @keyframes splash-pop {
 	0% {
@@ -166,6 +164,21 @@ button:hover {
 	100% {
 		transform: scale(1) translateY(0);
 		opacity: 1;
+	}
+}
+
+.spinner-circle {
+	transform-origin: 50% 50%;
+	animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
 	}
 }
 
@@ -180,10 +193,10 @@ button:hover {
 }
 
 .splash-spinner circle {
-	stroke: url(#splash-spinner-gradient);
+	stroke: #fff;
 	stroke-width: 5;
 	stroke-linecap: round;
-	filter: drop-shadow(0 0 8px #0078d7cc);
+	transform-origin: 50% 50%;
 }
 
 .btn-icon {
@@ -248,4 +261,48 @@ button:disabled .btn-icon {
 
 .nav-btn-hidden {
 	visibility: hidden;
+}
+
+.lightbox-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 10000;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s ease;
+}
+
+.lightbox-overlay.active {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.lightbox-image {
+	max-width: 90%;
+	max-height: 90%;
+	border-radius: 4px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+	transform: scale(0.9);
+	transition: transform 0.3s ease;
+}
+
+.lightbox-overlay.active .lightbox-image {
+	transform: scale(1);
+}
+
+.lightbox-close {
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	color: white;
+	font-size: 40px;
+	cursor: pointer;
+	user-select: none;
 }

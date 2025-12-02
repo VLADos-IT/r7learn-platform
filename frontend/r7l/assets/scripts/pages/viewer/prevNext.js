@@ -1,6 +1,8 @@
 import { showSplashScreen, hideSplashOnImagesLoad } from '../../components/splash.js';
 import { renderMarkdown } from '../../components/markdown.js';
+import { setupLightbox } from '../../components/lightbox.js';
 import { mdFiles, mdBasePath } from './core.js';
+import { fetchMdContent } from '../../api/resource.js';
 import {
 	updateProgress, loadProgress, getCourseIdFromURL,
 	courseUnits, progressList, getCurrentIndex, setCurrentMdIndex, getCurrentMdIndex
@@ -15,10 +17,9 @@ window.prevPage = async function () {
 		setCurrentMdIndex(getCurrentMdIndex() - 1);
 		const container = document.getElementById("markdown-content");
 		const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-		const token = localStorage.getItem('jwt');
-		const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-		const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
-		renderMarkdown(md, container, mdBasePath, mdFileName);
+		const md = await fetchMdContent(mdFiles[getCurrentMdIndex()]);
+		await renderMarkdown(md, container, mdBasePath, mdFileName);
+		setupLightbox(container);
 		updatePageIndicator(container);
 		updateNavButtons();
 		const unit = courseUnits[getCurrentIndex()];
@@ -48,10 +49,9 @@ window.nextPage = async function () {
 		setCurrentMdIndex(getCurrentMdIndex() + 1);
 		const container = document.getElementById("markdown-content");
 		const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-		const token = localStorage.getItem('jwt');
-		const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-		const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
-		renderMarkdown(md, container, mdBasePath, mdFileName);
+		const md = await fetchMdContent(mdFiles[getCurrentMdIndex()]);
+		await renderMarkdown(md, container, mdBasePath, mdFileName);
+		setupLightbox(container);
 		updatePageIndicator(container);
 		updateNavButtons();
 		const unit = courseUnits[getCurrentIndex()];

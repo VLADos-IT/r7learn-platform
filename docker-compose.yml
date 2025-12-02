@@ -108,7 +108,7 @@ services:
       - monitoring-net
     user: "101:101"
     ports:
-      - "8002:8001"
+      - "8002:8000"
 
   r7l-nginx:
     build:

@@ -38,6 +38,12 @@ export function buildicons(courseUnits, currentIndex, progressList, onSelect) {
 		li.onclick = () => {
 			showSplashScreen();
 			onSelect(idx);
+			if (window.innerWidth <= 900) {
+				const sidebar = document.querySelector('.sidebar');
+				const backdrop = document.querySelector('.sidebar-backdrop');
+				if (sidebar) sidebar.classList.remove('visible');
+				if (backdrop) backdrop.style.display = 'none';
+			}
 		};
 		icons.appendChild(li);
 	});

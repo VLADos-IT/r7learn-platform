@@ -1,7 +1,7 @@
 .profile-container {
 	max-width: 420px;
 	margin: 3rem auto 2rem auto;
-	background: #fff;
+	background: var(--profile-ct);
 	border-radius: 0.75rem;
 	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 	padding: 2rem 1.5rem;
@@ -38,7 +38,7 @@
 
 .profile-block {
 	width: 100%;
-	background: #f7fafc;
+	background: var(--profile-bg);
 	border-radius: 0.5rem;
 	padding: 1.5rem 1rem;
 	margin-bottom: 1.5rem;
@@ -49,14 +49,14 @@
 .profile-block h3 {
 	margin-bottom: 1rem;
 	font-size: 1.1rem;
-	color: var(--primary-color);
+	color: var(--profile-bg);
 	font-weight: 600;
 }
 
 .profile-form label {
 	display: block;
 	margin-bottom: 0.5rem;
-	color: #444;
+	color: #958f8f;
 	font-size: 0.98rem;
 }
 
@@ -78,7 +78,7 @@
 
 .profile-logout {
 	margin-top: 1.5rem;
-	background: var(--primary-color);
+	background: var(--profile-b);
 	color: var(--white);
 	border: none;
 	padding: 0.75rem 1.5rem;

@@ -1,19 +1,21 @@
 import { renderMarkdown } from '../../components/markdown.js';
+import { setupLightbox } from '../../components/lightbox.js';
 import {
 	updateProgress, userMdProgress, setCurrentMdIndex, getCurrentMdIndex,
 	mdBasePath, mdFiles, setMdFiles, setMdBasePath, getCurrentIndex, courseUnits
 } from './core.js';
 import { updateNavButtons } from './nav.js';
+import { getMdFiles, fetchMdContent } from '../../api/resource.js';
 
 export async function fetchMdFiles(mdPath) {
 	const unit = decodeURIComponent(mdPath.split('/')[3]);
-	const token = localStorage.getItem('jwt');
-	const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-	const resp = await fetch(`/api/resource/list/${unit}/mds`, { headers, credentials: 'include' });
-	if (!resp.ok) return [];
-	const files = await resp.json();
-	const base = mdPath.endsWith('/') ? mdPath.slice(0, -1) : mdPath;
-	return files.map(f => `${base}/${f}`);
+	try {
+		const files = await getMdFiles(unit);
+		const base = mdPath.endsWith('/') ? mdPath.slice(0, -1) : mdPath;
+		return files.map(f => `${base}/${f}`);
+	} catch (e) {
+		return [];
+	}
 }
 
 export async function loadMdFile(mdPath, mdIndex = 0, unitId = null) {
@@ -34,10 +36,9 @@ export async function loadMdFile(mdPath, mdIndex = 0, unitId = null) {
 		return;
 	}
 	const mdFileName = mdFiles[getCurrentMdIndex()].split('/').pop();
-	const token = localStorage.getItem('jwt');
-	const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-	const md = await fetch(mdFiles[getCurrentMdIndex()], { headers, credentials: 'include' }).then(resp => resp.text());
-	renderMarkdown(md, container, mdBasePath, mdFileName);
+	const md = await fetchMdContent(mdFiles[getCurrentMdIndex()]);
+	await renderMarkdown(md, container, mdBasePath, mdFileName);
+	setupLightbox(container);
 
 	updatePageIndicator(container);
 	updateNavButtons();
