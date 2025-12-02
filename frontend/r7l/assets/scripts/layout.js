@@ -66,28 +66,51 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+	const isIndex = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
+
 	loadComponent('/header.html', 'header-placeholder', '4rem').then(() => {
+		if (isIndex) {
+			const burgerBtn = document.querySelector('.toggle-icons-button');
+			if (burgerBtn) burgerBtn.remove();
+		}
+
 		const btnContainer = document.getElementById('auth-profile-btn');
 		if (btnContainer) {
 			const userId = localStorage.getItem('userId');
 			const login = localStorage.getItem('login');
+			const userRole = localStorage.getItem('userRole');
+
+			let html = '';
+			if (userRole === 'admin') {
+				html += `<button class="profile-button" onclick="location.href='https://admin.r7learn.xorg.su'" style="margin-right: 10px;">
+					<img src="assets/icons/settings.svg" class="btn-icon" />
+					admin-panel
+				</button>`;
+			}
+
 			if (userId && login) {
-				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">
+				html += `<button class="profile-button" onclick="location.href='profile.html'">
         <img src="assets/icons/person.svg" class="btn-icon" alt="Профиль" />
         ${escapeHtml(login)}
     </button>`;
 			} else if (userId) {
-				btnContainer.innerHTML = `<button class="profile-button" onclick="location.href='profile.html'">
+				html += `<button class="profile-button" onclick="location.href='profile.html'">
         <img src="assets/icons/person.svg" class="btn-icon" alt="Профиль" />
         Профиль
     </button>`;
 			} else {
-				btnContainer.innerHTML = `<button class="login-button" onclick="location.href='auth.html'">
+				html += `<button class="login-button" onclick="location.href='auth.html'">
         <img src="assets/icons/login.svg" class="btn-icon" alt="Войти" />
         Авторизация
     </button>`;
 			}
+			btnContainer.innerHTML = html;
 		}
+		const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		const applyTheme = isDark => document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+		applyTheme(darkQuery.matches);
+		darkQuery.addEventListener("change", e => applyTheme(e.matches));
+
 	});
 	loadComponent('/footer.html', 'footer-placeholder', '2.5rem');
 });
@@ -109,10 +132,3 @@ async function setBuildVersionFooter() {
 }
 
 window.addEventListener('DOMContentLoaded', setBuildVersionFooter);
-
-if (
-	window.location.hostname !== 'admin.r7learn.xorg.su' &&
-	localStorage.getItem('userRole') === 'admin'
-) {
-	window.location.href = 'https://admin.r7learn.xorg.su';
-}

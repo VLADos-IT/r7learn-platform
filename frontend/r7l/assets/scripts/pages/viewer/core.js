@@ -36,10 +36,27 @@ export function loadPage(index) {
 		const unit = courseUnits[index];
 		const container = document.getElementById("markdown-content");
 
+		// Update Title
+		const titleEl = document.getElementById('unit-title');
+		if (titleEl && unit) {
+			titleEl.textContent = unit.name;
+		}
+
+		// Reload Comments
+		const commentsContainer = document.getElementById('comments-section');
+		if (unit && commentsContainer) {
+			import('../../components/comments.js').then(({ renderComments }) => {
+				if (typeof renderComments === 'function') {
+					renderComments(unit.id, commentsContainer);
+				}
+			}).catch(err => console.error("Failed to load comments:", err));
+		}
+
 		buildicons(courseUnits, index, progressList, (idx) => {
 			showSplashScreen();
 			loadPage(idx).then(() => {
 				hideSplashOnImagesLoad();
+				setupNavigation(window.prevPage, window.nextPage);
 			});
 		});
 

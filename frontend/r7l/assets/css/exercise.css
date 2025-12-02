@@ -1,23 +1,24 @@
 .exercise-section {
 	max-width: 700px;
 	margin: 2rem auto;
-	background: var(--white);
+	background: var(--exercise-bg);
 	border-radius: 0.5rem;
 	padding: 2rem;
 	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+	color: var(--exercise-text);
 }
 
 .exercise-section h2 {
 	text-align: center;
 	font-size: 1.5rem;
 	margin-bottom: 2rem;
-	color: var(--primary-color);
+	color: var(--text-color);
 }
 
 #exercise-description p {
 	margin-bottom: 1.5rem;
 	font-size: 1.1rem;
-	color: #444;
+	color: var(--exercise-text);
 }
 
 #exercise-upload-form {
@@ -25,18 +26,64 @@
 	flex-direction: column;
 	gap: 1.5rem;
 	align-items: center;
+	width: 100%;
 }
 
-#exercise-upload-form label {
-	font-size: 1rem;
-	color: #333;
+.file-upload-container {
+	position: relative;
+	width: 100%;
+	max-width: 400px;
 }
 
-#user-docx-file {
-	margin-top: 0.5rem;
+.file-upload-input {
+	position: absolute;
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	z-index: -1;
 }
 
-#exercise-upload-form button {
+.file-upload-label {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.75rem 1rem;
+	background-color: var(--background-color);
+	border: 2px dashed var(--secondary-color);
+	border-radius: 0.5rem;
+	cursor: pointer;
+	transition: border-color 0.2s, background-color 0.2s;
+}
+
+.file-upload-label:hover {
+	border-color: var(--accent-color);
+	background-color: var(--exercise-bg);
+}
+
+.file-upload-text {
+	color: var(--text-color);
+	font-size: 0.95rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-right: 10px;
+}
+
+.file-upload-button {
+	background-color: var(--secondary-color);
+	color: white;
+	padding: 0.4rem 1rem;
+	border-radius: 0.25rem;
+	font-size: 0.9rem;
+	transition: background-color 0.2s;
+}
+
+.file-upload-button:hover {
+	background-color: var(--primary-color);
+}
+
+#exercise-upload-form button[type="submit"] {
 	background-color: var(--primary-color);
 	color: var(--white);
 	border: none;
@@ -47,7 +94,7 @@
 	transition: background-color 0.2s;
 }
 
-#exercise-upload-form button:hover {
+#exercise-upload-form button[type="submit"]:hover {
 	background-color: var(--secondary-color);
 }
 

@@ -1,9 +1,9 @@
 import { escapeHtml } from '../utils/escape.js';
+import { loadTemplate } from '../utils/template.js';
 
 export async function injectExerciseTemplates() {
 	if (document.getElementById('exercise-desc')) return;
-	const res = await fetch('assets/pages/exercise.templates.html');
-	const html = await res.text();
+	const html = await loadTemplate('assets/pages/exercise.templates.html');
 	const temp = document.createElement('div');
 	temp.innerHTML = html;
 	document.body.appendChild(temp);

@@ -6,7 +6,10 @@ import {
 	renderExerciseError
 } from '../exercise.js';
 import { renderMarkdown } from '../../components/markdown.js';
+import { setupLightbox } from '../../components/lightbox.js';
 import { updateProgress } from './core.js';
+import { fetchMdContent, uploadTempExercise } from '../../api/resource.js';
+import { checkExercise } from '../../api/exercise.js';
 
 export async function renderExerciseUnit(unit, container) {
 	await injectExerciseTemplates();
@@ -24,21 +27,12 @@ export async function renderExerciseUnit(unit, container) {
 	const descContainer = document.createElement('div');
 	descContainer.className = 'exercise-desc-markdown';
 	try {
-		const token = localStorage.getItem('jwt');
-		const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-		const resp = await fetch(descMdPath, { headers, credentials: 'include' });
-		if (resp.ok) {
-			const md = await resp.text();
-			// Передаем правильный mdBasePath для корректной подстановки картинок
-			const mdBasePath = `/api/resource/exercise_desc/${encodeURIComponent(unit.name)}/mds`;
-			renderMarkdown(md, descContainer, mdBasePath, '0-start.md');
-		} else if (resp.status === 401 || resp.status === 403) {
-			descContainer.innerHTML = '<p>Нет доступа к описанию задания (авторизуйтесь)</p>';
-		} else {
-			descContainer.innerHTML = '<p>Описание задания не найдено</p>';
-		}
+		const md = await fetchMdContent(descMdPath);
+		const mdBasePath = `/api/resource/exercise_desc/${encodeURIComponent(unit.name)}/mds`;
+		await renderMarkdown(md, descContainer, mdBasePath, '0-start.md');
+		setupLightbox(descContainer);
 	} catch (e) {
-		descContainer.innerHTML = '<p>Ошибка загрузки описания задания</p>';
+		descContainer.innerHTML = '<p>Описание задания не найдено или нет доступа</p>';
 	}
 	container.appendChild(descContainer);
 
@@ -46,12 +40,26 @@ export async function renderExerciseUnit(unit, container) {
 	form.id = 'exercise-upload-form';
 	form.enctype = 'multipart/form-data';
 	form.innerHTML = `
-		<label>Загрузите ваш .docx файл для проверки:
-			<input type="file" name="userDocx" id="user-docx-file" accept=".docx" required>
-		</label>
+		<div class="file-upload-container">
+			<label for="user-docx-file" class="file-upload-label">
+				<span class="file-upload-text">Выберите файл .docx</span>
+				<span class="file-upload-button">Обзор</span>
+			</label>
+			<input type="file" name="userDocx" id="user-docx-file" accept=".docx" required class="file-upload-input">
+		</div>
 		<button type="submit">Проверить</button>
 	`;
 	container.appendChild(form);
+
+	const fileInput = form.querySelector('#user-docx-file');
+	const fileLabelText = form.querySelector('.file-upload-text');
+	fileInput.addEventListener('change', (e) => {
+		if (e.target.files.length > 0) {
+			fileLabelText.textContent = e.target.files[0].name;
+		} else {
+			fileLabelText.textContent = 'Выберите файл .docx';
+		}
+	});
 
 	const resultBlock = document.createElement('div');
 	resultBlock.id = 'exercise-result';
@@ -67,63 +75,36 @@ export async function renderExerciseUnit(unit, container) {
 			return;
 		}
 		const file = fileInput.files[0];
-		const formData = new FormData();
-		formData.append('file', file);
-		formData.append('userId', userId);
-		let uploadRes;
+
+		let uploadData;
 		try {
-			const token = localStorage.getItem('jwt');
-			const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-			uploadRes = await fetch('/api/resource/upload/temp_exercise', {
-				method: 'POST',
-				body: formData,
-				headers,
-				credentials: 'include'
-			});
-		} catch (err) {
-			resultBlock.innerHTML = 'Ошибка соединения с сервером';
+			uploadData = await uploadTempExercise(file);
+		} catch (e) {
+			resultBlock.innerHTML = '';
+			resultBlock.appendChild(renderExerciseError('Ошибка загрузки файла: ' + e.message));
 			return;
 		}
-		if (!uploadRes.ok) {
-			if (uploadRes.status === 413) {
-				resultBlock.innerHTML = 'Файл слишком большой';
-			} else {
-				resultBlock.innerHTML = 'Ошибка загрузки файла: ' + uploadRes.status;
-			}
-			return;
-		}
-		const uploadData = await uploadRes.json();
+
 		const userSolutionPath = `/resources/${uploadData.path}`;
 		const body = {
 			courseUnitId: Number(unit.id),
 			userId: Number(userId),
 			userSolutionPath
 		};
-		let res;
+
 		try {
-			res = await fetch("/exercisecheck/CheckExercise", {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(body)
-			});
-		} catch (err) {
-			resultBlock.innerHTML = 'Ошибка соединения с сервисом проверки';
-			return;
-		}
-		if (!res.ok) {
-			let msg = await res.text();
+			const data = await checkExercise(body);
 			resultBlock.innerHTML = '';
-			resultBlock.appendChild(renderExerciseError(msg || ('Ошибка проверки: ' + res.status)));
-			return;
-		}
-		const data = await res.json();
-		resultBlock.innerHTML = '';
-		if (data.result) {
-			resultBlock.appendChild(renderExerciseSuccess());
-			await updateProgress(unit.id, 0);
-			if (window.refreshProgressAndicons) window.refreshProgressAndicons();
-		} else {
-			resultBlock.appendChild(renderExerciseFail(data.differences));
+			if (data.result) {
+				resultBlock.appendChild(renderExerciseSuccess());
+				await updateProgress(unit.id, 0);
+				if (window.refreshProgressAndicons) window.refreshProgressAndicons();
+			} else {
+				resultBlock.appendChild(renderExerciseFail(data.differences));
+			}
+		} catch (err) {
+			resultBlock.innerHTML = '';
+			resultBlock.appendChild(renderExerciseError(err.message || 'Ошибка проверки'));
 		}
 	});
 }

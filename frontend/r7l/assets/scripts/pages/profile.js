@@ -39,11 +39,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 	setupLogout();
 });
 
+import { loadTemplate } from '../utils/template.js';
+
 async function injectProfileTemplates() {
 	const existing = document.getElementById('profile-main');
 	if (existing) return;
-	const res = await fetch('assets/pages/profile.templates.html');
-	const html = await res.text();
+	const html = await loadTemplate('assets/pages/profile.templates.html');
 	const temp = document.createElement('div');
 	temp.innerHTML = html;
 	document.body.appendChild(temp);

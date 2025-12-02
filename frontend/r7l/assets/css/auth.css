@@ -1,5 +1,5 @@
 .auth-container {
-	background-color: var(--white);
+	background-color: var(--auth-bg);
 	padding: 2rem;
 	border-radius: 0.5rem;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -33,4 +33,9 @@
 input,
 textarea {
 	cursor: text;
+}
+
+#show-register,
+#show-login {
+	color: #5e5e5e;
 }

@@ -38,9 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 					document.cookie = `userRole=${user.positionName}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
 					showAlert('Вход выполнен!', 'success');
 					setTimeout(() => {
-						window.location.href = user.positionName === 'admin'
-							? 'https://admin.r7learn.xorg.su'
-							: 'profile.html';
+						window.location.href = 'profile.html';
 					}, 800);
 				} else {
 					showAlert('Неверный логин или пароль');
@@ -115,9 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 					document.cookie = `userRole=${data.positionName}; path=/; domain=.r7learn.xorg.su; secure; samesite=strict`;
 					showAlert('Регистрация успешна!', 'success');
 					setTimeout(() => {
-						window.location.href = data.positionName === 'admin'
-							? 'https://admin.r7learn.xorg.su'
-							: 'profile.html';
+						window.location.href = 'profile.html';
 					}, 800);
 				} else {
 					showAlert('Ошибка регистрации. Попробуйте позже.');

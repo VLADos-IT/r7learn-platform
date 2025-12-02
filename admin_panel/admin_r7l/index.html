@@ -5,21 +5,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin || R7Learn</title>
-    <link rel="stylesheet" href="assets/css/reset.css">
-    <link rel="stylesheet" href="assets/css/layout.css">
-    <link rel="stylesheet" href="assets/css/form.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
-    <link rel="stylesheet" href="assets/css/auth-error.css">
+
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
     <link rel="manifest" href="/assets/favicons/site.webmanifest">
-    <style>
-        body {
-            display: none;
-        }
-    </style>
+
+    <link rel="stylesheet" href="/assets/css/reset.css">
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/form.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link rel="stylesheet" href="/assets/css/auth-error.css">
+
+    <script type="module" src="/assets/scripts/layout.js"></script>
+    <script type="module" src="/assets/scripts/admin.js"></script>
 </head>
 
 <body>
@@ -31,28 +32,37 @@
         checkAdminAccess();
     </script>
     <div id="header-placeholder"></div>
+
     <main class="main-content admin-flex">
+
+        <section class="admin-block global-course-selector">
+            <label for="global-course-select">Выберите курс для редактирования:</label>
+            <select id="global-course-select"></select>
+        </section>
+
         <section class="admin-block">
-            <h2>Курсы</h2>
-            <ul id="courses-list"></ul>
+            <h2>Создать новый курс</h2>
             <form id="add-course-form" class="form-row">
-                <div><input type="text" name="name" placeholder="Название курса" required></div>
+                <div><input type="text" name="name" placeholder="Название нового курса" required></div>
                 <div><input type="text" name="description" placeholder="Описание" required></div>
-                <div><button type="submit">Добавить курс</button></div>
+                <div><button type="submit">Создать курс</button></div>
             </form>
         </section>
+
         <section class="admin-block">
-            <h2>Загрузка темы</h2>
+            <h2>Темы курса: <span id="current-course-name"></span></h2>
             <ul id="units-list"></ul>
+        </section>
+
+        <section class="admin-block">
+            <h2>Добавить тему</h2>
             <form id="add-unit-form" enctype="multipart/form-data" class="form-row">
-                <div>
-                    <select name="courseId" id="course-select" required></select>
-                </div>
+                <input type="hidden" name="courseId" class="course-id-input">
                 <div>
                     <input type="number" name="orderInCourse" placeholder="Порядок" min="1" required>
                 </div>
                 <div class="file-input-wrapper">
-                    <label class="file-custom-btn" for="docx-file">Выбрать файл</label>
+                    <label class="file-custom-btn" for="docx-file">Выбрать .docx файл</label>
                     <input type="file" name="docx" id="docx-file" accept=".docx" required>
                     <span class="file-name-label" id="file-name-label">Файл не выбран</span>
                 </div>
@@ -62,14 +72,11 @@
             </form>
             <div id="systemName-hint" style="font-size:0.9em;color:#888;margin-top:0.5em;"></div>
         </section>
+
         <section class="admin-block">
-            <h2>Загрузка теста</h2>
+            <h2>Добавить тест</h2>
             <form id="upload-test-form" enctype="multipart/form-data" class="form-row">
-                <div>
-                    <label>Курс:
-                        <select name="courseId" id="test-course-select" required></select>
-                    </label>
-                </div>
+                <input type="hidden" name="courseId" class="course-id-input">
                 <div>
                     <label>Порядок в курсе:
                         <input type="number" name="orderInCourse" min="1" required>
@@ -86,14 +93,11 @@
             </form>
             <div id="upload-test-status"></div>
         </section>
+
         <section class="admin-block">
-            <h2>Загрузка задания</h2>
+            <h2>Добавить задание</h2>
             <form id="upload-exercise-form" enctype="multipart/form-data" class="form-row">
-                <div>
-                    <label>Курс:
-                        <select name="courseId" id="exercise-course-select" required></select>
-                    </label>
-                </div>
+                <input type="hidden" name="courseId" class="course-id-input">
                 <div>
                     <label>Порядок в курсе:
                         <input type="number" name="orderInCourse" min="1" required>
@@ -118,6 +122,7 @@
             </form>
             <div id="upload-exercise-status"></div>
         </section>
+
     </main>
 
     <div id="footer-placeholder"></div>

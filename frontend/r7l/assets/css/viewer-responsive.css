@@ -1,0 +1,24 @@
+@media (max-width: 700px) {
+	.viewer-top-bar {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+		padding: 0.5rem;
+	}
+
+	.unit-title {
+		max-width: 100%;
+		font-size: 1rem;
+		white-space: normal;
+		margin-bottom: 0.25rem;
+	}
+
+	.viewer-controls {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.scroll-container {
+		padding: 1rem;
+	}
+}

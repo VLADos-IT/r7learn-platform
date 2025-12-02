@@ -1,4 +1,5 @@
 import { renderUnits, fillTestCourseSelect } from '../modules/ui.js';
+import { uploadResource } from '../modules/resource.js';
 
 export async function initUnitHandlers() {
 	document.getElementById('add-unit-form').addEventListener('submit', async e => {
@@ -21,22 +22,15 @@ export async function initUnitHandlers() {
 		formData.append('subdir', 'docx');
 		formData.append('courseId', courseId);
 		formData.append('orderInCourse', orderInCourse);
-		let headers = {};
-		const token = document.cookie.match(/(?:^|; )jwt=([^;]*)/);
-		if (token) headers['Authorization'] = `Bearer ${decodeURIComponent(token[1])}`;
-		const convRes = await fetch('/api/resource/upload', {
-			method: 'POST',
-			body: formData,
-			headers,
-			credentials: 'include'
-		});
-		if (!convRes.ok) {
-			alert('Ошибка загрузки: ' + await convRes.text());
-			return;
+
+		try {
+			await uploadResource(formData);
+			alert('Юнит успешно добавлен!');
+			form.reset();
+			await renderUnits(courseId);
+			await fillTestCourseSelect();
+		} catch (e) {
+			alert('Ошибка загрузки: ' + e.message);
 		}
-		alert('Юнит успешно добавлен!');
-		form.reset();
-		await renderUnits(courseId);
-		await fillTestCourseSelect();
 	});
 }

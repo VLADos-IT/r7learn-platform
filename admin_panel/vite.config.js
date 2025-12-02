@@ -21,7 +21,9 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         { src: resolve(adminDir, '**/*'), dest: 'assets' },
-        { src: resolve(adminDir, 'favicon.ico'), dest: '.' }
+        { src: resolve(adminDir, 'favicon.ico'), dest: '.' },
+        { src: resolve(adminDir, 'header.html'), dest: '.' },
+        { src: resolve(adminDir, 'footer.html'), dest: '.' }
       ]
     })
   ]

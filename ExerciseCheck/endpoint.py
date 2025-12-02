@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 import requests
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, APIRouter
 from pydantic import BaseModel
 import os
 
@@ -8,6 +8,7 @@ import docx_comparer
 
 
 app = FastAPI()
+router = APIRouter()
 
 
 # correct type_name from db
@@ -125,7 +126,7 @@ def check_exercise(course_unit_id: int, user_id: int, user_solution_path: str):
     return user_solution_differrences, degree == 1
 
 
-@app.put("/CheckExercise")
+@router.put("/CheckExercise")
 async def check_user_exrcise(exercise_check_dto: ExerciseCheckDTO):
     differences, result = check_exercise(
         course_unit_id=exercise_check_dto.courseUnitId,
@@ -142,7 +143,7 @@ async def check_user_exrcise(exercise_check_dto: ExerciseCheckDTO):
     }
 
 
-@app.post("/CreateNewExercise")
+@router.post("/CreateNewExercise")
 async def create_new_exercise(exercise_create_dto: ExerciseCreateDTO):
     create_exercise(
         expected_solution_path=exercise_create_dto.expectedSolutionPath,
@@ -151,6 +152,8 @@ async def create_new_exercise(exercise_create_dto: ExerciseCreateDTO):
         name=exercise_create_dto.name
     )
 
+app.include_router(router)
+app.include_router(router, prefix="/exercisecheck")
 
 if __name__ == "__main__":
     import uvicorn

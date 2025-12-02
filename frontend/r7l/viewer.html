@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="assets/css/responsive.css" />
     <link rel="stylesheet" href="assets/css/variables.css" />
     <link rel="stylesheet" href="assets/css/components.css" />
+    <link rel="stylesheet" href="assets/css/comments.css" />
+    <link rel="stylesheet" href="assets/css/exercise.css" />
+    <link rel="stylesheet" href="assets/css/viewer-responsive.css" />
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
@@ -33,17 +36,33 @@
     <div id="header-placeholder"></div>
     <div class="container">
         <aside class="sidebar">
+            <button class="sidebar-close-btn" onclick="toggleicons(true)">&times;</button>
             <h2>Меню курса</h2>
             <ul id="icons"></ul>
         </aside>
         <div class="sidebar-backdrop"></div>
 
         <main class="content">
-            <div id="viewer-container"></div>
-            <div id="markdown-content" class="markdown"></div>
-            <div class="nav-buttons">
-                <button data-nav="prev" class="hidden"><span class="nav-arrow">&#8592;</span> Назад</button>
-                <button data-nav="next" class="hidden">Вперёд <span class="nav-arrow">&#8594;</span></button>
+            <div class="viewer-top-bar">
+                <h1 id="unit-title" class="unit-title"></h1>
+                <div class="viewer-controls">
+                    <button id="font-size-decrease" class="control-btn" title="Уменьшить шрифт">A-</button>
+                    <span id="font-size-display">100%</span>
+                    <button id="font-size-increase" class="control-btn" title="Увеличить шрифт">A+</button>
+                    <select id="font-family-select" class="control-select" title="Выбрать шрифт">
+                        <option value="sans-serif">Sans</option>
+                        <option value="serif">Serif</option>
+                    </select>
+                </div>
+            </div>
+            <div class="scroll-container">
+                <div id="viewer-container"></div>
+                <div id="markdown-content" class="markdown"></div>
+                <div class="nav-buttons">
+                    <button data-nav="prev" class="hidden"><span class="nav-arrow">&#8592;</span> Назад</button>
+                    <button data-nav="next" class="hidden">Вперёд <span class="nav-arrow">&#8594;</span></button>
+                </div>
+                <div id="comments-section" class="comments-section"></div>
             </div>
         </main>
     </div>

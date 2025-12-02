@@ -1,0 +1,131 @@
+.comments-container {
+	margin-top: 40px;
+	padding: 20px;
+	background-color: var(--viewer-bg);
+	color: var(--viewer-text);
+	border-top: 1px solid var(--course-card-border);
+}
+
+.comments-header {
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+	color: var(--text-color);
+}
+
+.comment-form {
+	margin-bottom: 30px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.comment-form textarea {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid var(--course-card-border);
+	border-radius: 4px;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	resize: vertical;
+	min-height: 80px;
+	font-family: inherit;
+}
+
+.comment-form button {
+	align-self: flex-start;
+	padding: 8px 16px;
+	background-color: var(--button-bg);
+	color: var(--button-text);
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.comment-form button:hover {
+	background-color: var(--button-hover-bg);
+}
+
+.comment-list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.comment-item {
+	background-color: var(--background-color);
+	padding: 15px;
+	border-radius: 8px;
+	border: 1px solid var(--course-card-border);
+}
+
+.comment-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+	font-size: 0.9rem;
+	color: var(--secondary-color);
+}
+
+.comment-author {
+	font-weight: bold;
+	color: var(--text-color);
+}
+
+.comment-date {
+	font-size: 0.8rem;
+	opacity: 0.8;
+}
+
+.comment-content {
+	margin-bottom: 10px;
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+.comment-actions {
+	display: flex;
+	gap: 10px;
+	font-size: 0.9rem;
+}
+
+.comment-action-btn {
+	background: none;
+	border: none;
+	color: var(--accent-color);
+	cursor: pointer;
+	padding: 0;
+	font: inherit;
+}
+
+.comment-action-btn:hover {
+	text-decoration: underline;
+}
+
+.comment-delete-btn {
+	color: #ff4d4f;
+}
+
+.replies-container {
+	margin-top: 15px;
+	margin-left: 20px;
+	padding-left: 15px;
+	border-left: 2px solid var(--course-card-border);
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.reply-form-container {
+	margin-top: 10px;
+}
+
+.load-more-btn {
+	margin-top: 10px;
+	background: none;
+	border: none;
+	color: var(--accent-color);
+	cursor: pointer;
+	font-size: 0.9rem;
+}

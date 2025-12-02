@@ -142,3 +142,29 @@
 		max-height: 140px;
 	}
 }
+
+.global-course-selector {
+	gap: 0.5rem;
+}
+
+.global-course-selector label {
+	font-weight: bold;
+	color: var(--text-color);
+	align-self: flex-start;
+	margin-bottom: 0.5rem;
+}
+
+.global-course-selector select {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+	background-color: #fff;
+	color: #333;
+}
+
+.global-course-selector select:focus {
+	border-color: var(--accent-color);
+	outline: none;
+}
