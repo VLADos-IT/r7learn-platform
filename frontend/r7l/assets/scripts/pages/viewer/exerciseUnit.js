@@ -78,7 +78,7 @@ export async function renderExerciseUnit(unit, container) {
 
 		let uploadData;
 		try {
-			uploadData = await uploadTempExercise(file);
+			uploadData = await uploadTempExercise(file, userId);
 		} catch (e) {
 			resultBlock.innerHTML = '';
 			resultBlock.appendChild(renderExerciseError('Ошибка загрузки файла: ' + e.message));
