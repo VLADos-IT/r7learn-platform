@@ -146,6 +146,6 @@ volumes:
 
 networks:
   r7l-network:
-    external: true
+     driver: bridge
   monitoring-net:
-    external: true
+     driver: bridge
