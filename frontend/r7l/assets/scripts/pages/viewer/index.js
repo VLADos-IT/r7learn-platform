@@ -49,10 +49,8 @@ function setupFontControls() {
 		markdownContent.style.fontSize = `${currentSize}%`;
 		if (currentFamily === 'serif') {
 			markdownContent.style.fontFamily = "'Merriweather', 'Georgia', serif";
-			markdownContent.style.lineHeight = "1.8";
 		} else {
 			markdownContent.style.fontFamily = ""; // Reset to default (Inter/Segoe UI from CSS)
-			markdownContent.style.lineHeight = "1.6";
 		}
 		if (display) display.textContent = `${currentSize}%`;
 

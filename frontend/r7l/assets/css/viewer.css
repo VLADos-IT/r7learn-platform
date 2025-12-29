@@ -64,19 +64,22 @@
 	flex: 1;
 	overflow-y: auto;
 	scroll-behavior: smooth;
-	padding: 2rem 10%;
+	padding: 3%;
 }
 
 .scroll-container::-webkit-scrollbar {
-	width: 8px;
+	width: 2px;
 }
+
 .scroll-container::-webkit-scrollbar-track {
 	background: transparent;
 }
+
 .scroll-container::-webkit-scrollbar-thumb {
 	background: #cbd5e1;
 	border-radius: 10px;
 }
+
 .markdown {
 	flex: 0 0 auto;
 	overflow-y: visible;
@@ -169,8 +172,10 @@
 	font-size: 1rem;
 	cursor: pointer;
 	box-shadow: 0 1px 4px rgba(47, 62, 70, 0.10);
-	position: absolute;
-	left: 50%;
+	margin-left: 1em;
+	margin-right: 0;
+	position: static;
+	min-width: 180px;
 }
 
 .page-indicator {

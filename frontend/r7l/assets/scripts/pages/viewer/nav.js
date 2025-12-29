@@ -45,8 +45,6 @@ export function updateNavButtons() {
 	}
 	btnContainer.appendChild(nextBtn);
 
-	navButtons.appendChild(btnContainer);
-
 	const needNextUnitBtn =
 		(isLesson && hasMd && isLastMd && !isLastUnit) ||
 		((isTest || isExercise) && !isLastUnit);
@@ -60,8 +58,10 @@ export function updateNavButtons() {
 				loadPage(getCurrentIndex() + 1);
 			});
 		};
-		navButtons.appendChild(nextUnitBtn);
+		btnContainer.appendChild(nextUnitBtn);
 	}
+
+	navButtons.appendChild(btnContainer);
 
 	if (
 		(isLesson && hasMd) ||
